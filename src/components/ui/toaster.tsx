@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
@@ -7,8 +8,19 @@ import {
   ToastTitle,
   ToastViewport,
 } from "@/components/ui/toast"
+import { useEffect, useState } from "react"
 
 export function Toaster() {
+  const [isReady, setIsReady] = useState(false)
+  
+  useEffect(() => {
+    setIsReady(true)
+  }, [])
+  
+  if (!isReady) {
+    return null
+  }
+  
   const { toasts } = useToast()
 
   return (

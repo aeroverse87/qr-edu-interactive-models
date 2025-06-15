@@ -26,10 +26,14 @@ function Loader() {
 function Model({ url, modelId }: { url: string; modelId: string }) {
   const [loadError, setLoadError] = useState(false);
   
+  console.log(`Attempting to load model from: ${url}`);
+  
   try {
     const { scene } = useGLTF(url);
+    console.log(`Successfully loaded model: ${modelId}`, scene);
     return <primitive object={scene} scale={1} />;
   } catch (error) {
+    console.error(`Failed to load model: ${modelId}`, error);
     console.log(`Using placeholder for model: ${modelId}`);
     return <PlaceholderModel type={modelId} />;
   }
@@ -39,6 +43,7 @@ function ModelWithFallback({ url, modelId }: { url: string; modelId: string }) {
   const [usePlaceholder, setUsePlaceholder] = useState(false);
 
   if (usePlaceholder) {
+    console.log(`Using placeholder fallback for: ${modelId}`);
     return <PlaceholderModel type={modelId} />;
   }
 
@@ -51,6 +56,8 @@ function ModelWithFallback({ url, modelId }: { url: string; modelId: string }) {
 
 const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   const modelId = modelPath.split('/').pop()?.replace('.glb', '') || '';
+  
+  console.log(`ModelViewer - Title: ${title}, ModelPath: ${modelPath}, ModelId: ${modelId}`);
 
   return (
     <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">

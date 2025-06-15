@@ -1,13 +1,44 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, Component, ReactNode } from 'react';
 import PlaceholderModel from './PlaceholderModel';
 import { Progress } from '@/components/ui/progress';
 
 interface ModelViewerProps {
   modelPath: string;
   title: string;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ModelErrorBoundary extends Component<
+  { children: ReactNode; onError: () => void },
+  ErrorBoundaryState
+> {
+  constructor(props: { children: ReactNode; onError: () => void }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error('Model loading error:', error, errorInfo);
+    this.props.onError();
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null;
+    }
+
+    return this.props.children;
+  }
 }
 
 function Loader({ modelTitle }: { modelTitle: string }) {
@@ -30,12 +61,8 @@ function Loader({ modelTitle }: { modelTitle: string }) {
   );
 }
 
-function Model({ url, modelId }: { url: string; modelId: string }) {
-  console.log(`Loading model from: ${url}`);
-  
+function Model({ url }: { url: string }) {
   const { scene } = useGLTF(url);
-  console.log(`Successfully loaded model: ${modelId}`, scene);
-  
   return <primitive object={scene} scale={1} />;
 }
 
@@ -48,15 +75,11 @@ function ModelWithFallback({ url, modelId, title }: { url: string; modelId: stri
   }
 
   return (
-    <Suspense 
-      fallback={<Loader modelTitle={title} />}
-      onError={(error) => {
-        console.error(`Suspense error for model ${modelId}:`, error);
-        setUsePlaceholder(true);
-      }}
-    >
-      <Model url={url} modelId={modelId} />
-    </Suspense>
+    <ModelErrorBoundary onError={() => setUsePlaceholder(true)}>
+      <Suspense fallback={<Loader modelTitle={title} />}>
+        <Model url={url} />
+      </Suspense>
+    </ModelErrorBoundary>
   );
 }
 

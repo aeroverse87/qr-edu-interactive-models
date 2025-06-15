@@ -1,4 +1,3 @@
-
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
 import React, { Suspense, useState, Component, ReactNode, useRef } from 'react';
@@ -56,12 +55,12 @@ const lightPresets = [
 ];
 
 const viewpoints = [
-  { id: 'front', name: 'Front', position: [0, 0, 5] },
-  { id: 'back', name: 'Back', position: [0, 0, -5] },
-  { id: 'left', name: 'Left', position: [-5, 0, 0] },
-  { id: 'right', name: 'Right', position: [5, 0, 0] },
-  { id: 'top', name: 'Top', position: [0, 5, 0] },
-  { id: 'bottom', name: 'Bottom', position: [0, -5, 0] },
+  { id: 'front', name: 'Front', position: [0, 0, 5] as [number, number, number] },
+  { id: 'back', name: 'Back', position: [0, 0, -5] as [number, number, number] },
+  { id: 'left', name: 'Left', position: [-5, 0, 0] as [number, number, number] },
+  { id: 'right', name: 'Right', position: [5, 0, 0] as [number, number, number] },
+  { id: 'top', name: 'Top', position: [0, 5, 0] as [number, number, number] },
+  { id: 'bottom', name: 'Bottom', position: [0, -5, 0] as [number, number, number] },
 ];
 
 class ErrorBoundary extends Component<

@@ -127,6 +127,24 @@ const ModelView = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(modelPath);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${model.id}.glb`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -165,7 +183,7 @@ const ModelView = () => {
                   <Share className="w-4 h-4" />
                   <span>Share Model</span>
                 </Button>
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button onClick={handleDownload} variant="outline" className="flex items-center space-x-2">
                   <Download className="w-4 h-4" />
                   <span>Download Resources</span>
                 </Button>
@@ -196,8 +214,14 @@ const ModelView = () => {
             </div>
           </div>
 
-          {/* Right Side - QR Code and Related Models */}
+          {/* Right Side - Interactive 3D Model pill and QR Code and Related Models */}
           <div className="lg:col-span-1 space-y-6">
+            {/* Interactive 3D Model pill - moved here */}
+            <div className="bg-white bg-opacity-90 backdrop-blur-sm rounded-lg px-3 py-2 text-sm border shadow-sm">
+              <div className="font-medium text-gray-900">{model.title}</div>
+              <div className="text-gray-600 text-xs">Interactive 3D Model</div>
+            </div>
+
             {/* QR Code Section */}
             <div className="bg-white border rounded-lg p-6">
               <div className="flex items-center space-x-2 mb-4">

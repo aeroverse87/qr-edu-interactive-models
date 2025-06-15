@@ -51,12 +51,6 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
 
   return (
     <div className="space-y-4">
-      {/* Model Info - moved outside and above controls */}
-      <div className="bg-white bg-opacity-90 backdrop-blur-sm rounded-lg px-3 py-2 text-sm border shadow-sm inline-block">
-        <div className="font-medium text-gray-900">{title}</div>
-        <div className="text-gray-600 text-xs">Interactive 3D Model</div>
-      </div>
-
       <div className="model-viewer-container space-y-4">
         {/* 3D Viewer */}
         <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">

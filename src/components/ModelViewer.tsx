@@ -1,4 +1,3 @@
-
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
 import { Suspense, useState, Component, ReactNode } from 'react';
@@ -14,7 +13,7 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-class ModelErrorBoundary extends Component<
+class ErrorBoundary extends Component<
   { children: ReactNode; onError: () => void },
   ErrorBoundaryState
 > {
@@ -75,11 +74,11 @@ function ModelWithFallback({ url, modelId, title }: { url: string; modelId: stri
   }
 
   return (
-    <ModelErrorBoundary onError={() => setUsePlaceholder(true)}>
+    <ErrorBoundary onError={() => setUsePlaceholder(true)}>
       <Suspense fallback={<Loader modelTitle={title} />}>
         <Model url={url} />
       </Suspense>
-    </ModelErrorBoundary>
+    </ErrorBoundary>
   );
 }
 
@@ -89,10 +88,10 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   console.log(`ModelViewer - Title: ${title}, ModelPath: ${modelPath}, ModelId: ${modelId}`);
 
   return (
-    <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
+    <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
       <Canvas
         camera={{ position: [0, 0, 3], fov: 50 }}
-        style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)' }}
       >
         <ambientLight intensity={0.6} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={0.8} />

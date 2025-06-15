@@ -4,6 +4,7 @@ import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-t
 import { Suspense, useState, useEffect } from 'react';
 import PlaceholderModel from './PlaceholderModel';
 import { Progress } from '@/components/ui/progress';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 interface ModelViewerProps {
   modelPath: string;
@@ -82,10 +83,10 @@ function Model({ url, modelId, onError }: { url: string; modelId: string; onErro
         const contentType = response.headers.get('content-type');
         console.log(`Content type for ${modelId}:`, contentType);
         
-        // Try to preload with useGLTF to catch parsing errors early
+        // Try to preload with GLTFLoader to catch parsing errors early
         try {
           await new Promise((resolve, reject) => {
-            const loader = new THREE.GLTFLoader();
+            const loader = new GLTFLoader();
             loader.load(
               url,
               (gltf) => {

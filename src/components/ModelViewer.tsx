@@ -1,3 +1,4 @@
+
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
 import { Suspense, useState, Component, ReactNode } from 'react';
@@ -104,8 +105,9 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
-          minDistance={0.5}
-          maxDistance={8}
+          minDistance={0.01}
+          maxDistance={50}
+          zoomSpeed={2}
         />
       </Canvas>
       

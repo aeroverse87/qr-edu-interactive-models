@@ -1,7 +1,7 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import PlaceholderModel from './PlaceholderModel';
 import { Progress } from '@/components/ui/progress';
 
@@ -30,109 +30,33 @@ function Loader({ modelTitle }: { modelTitle: string }) {
   );
 }
 
-function ErrorDisplay({ error, modelTitle }: { error: string; modelTitle: string }) {
-  return (
-    <Html center>
-      <div className="flex flex-col items-center space-y-4 p-6 bg-red-50 border border-red-200 rounded-lg shadow-lg min-w-[300px] max-w-[400px]">
-        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-        </div>
-        <div className="text-center">
-          <div className="text-red-800 font-medium mb-2">
-            Failed to load {modelTitle}
-          </div>
-          <div className="text-sm text-red-600 mb-3">
-            {error}
-          </div>
-          <div className="text-xs text-red-500">
-            Using placeholder model instead
-          </div>
-        </div>
-      </div>
-    </Html>
-  );
-}
-
-function Model({ url, modelId, onError }: { url: string; modelId: string; onError: (error: string) => void }) {
-  console.log(`Attempting to load model from: ${url}`);
+function Model({ url, modelId }: { url: string; modelId: string }) {
+  console.log(`Loading model from: ${url}`);
   
-  try {
-    const { scene } = useGLTF(url);
-    console.log(`Successfully rendered model: ${modelId}`, scene);
-    return <primitive object={scene} scale={1} />;
-  } catch (error) {
-    console.error(`Render error for model: ${modelId}`, error);
-    onError(`Failed to parse 3D model file`);
-    return <PlaceholderModel type={modelId} />;
-  }
-}
-
-function ModelErrorBoundary({ children, onError }: { children: React.ReactNode; onError: (error: string) => void }) {
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      if (event.message?.includes('GLB') || event.message?.includes('GLTF')) {
-        console.error('GLB Error caught:', event.error);
-        setHasError(true);
-        onError('GLB file parsing failed');
-      }
-    };
-
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      if (event.reason?.message?.includes('GLB') || event.reason?.message?.includes('GLTF')) {
-        console.error('GLB Promise rejection caught:', event.reason);
-        setHasError(true);
-        onError('GLB file loading failed');
-        event.preventDefault();
-      }
-    };
-
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, [onError]);
-
-  if (hasError) {
-    return null;
-  }
-
-  return <>{children}</>;
+  const { scene } = useGLTF(url);
+  console.log(`Successfully loaded model: ${modelId}`, scene);
+  
+  return <primitive object={scene} scale={1} />;
 }
 
 function ModelWithFallback({ url, modelId, title }: { url: string; modelId: string; title: string }) {
   const [usePlaceholder, setUsePlaceholder] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const handleError = (error: string) => {
-    console.log(`Error occurred for ${modelId}: ${error}`);
-    setErrorMessage(error);
-    setTimeout(() => {
-      setUsePlaceholder(true);
-    }, 3000);
-  };
 
   if (usePlaceholder) {
     console.log(`Using placeholder fallback for: ${modelId}`);
     return <PlaceholderModel type={modelId} />;
   }
 
-  if (errorMessage) {
-    return <ErrorDisplay error={errorMessage} modelTitle={title} />;
-  }
-
   return (
-    <ModelErrorBoundary onError={handleError}>
-      <Suspense fallback={<Loader modelTitle={title} />}>
-        <Model url={url} modelId={modelId} onError={handleError} />
-      </Suspense>
-    </ModelErrorBoundary>
+    <Suspense 
+      fallback={<Loader modelTitle={title} />}
+      onError={(error) => {
+        console.error(`Suspense error for model ${modelId}:`, error);
+        setUsePlaceholder(true);
+      }}
+    >
+      <Model url={url} modelId={modelId} />
+    </Suspense>
   );
 }
 
@@ -146,9 +70,6 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
         style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}
-        onError={(error) => {
-          console.error(`Canvas error for model ${modelId}:`, error);
-        }}
       >
         <ambientLight intensity={0.6} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={0.8} />

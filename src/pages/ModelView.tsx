@@ -133,15 +133,15 @@ const ModelView = () => {
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span>Rotate:</span>
-                  <span>Click & Drag</span>
+                  <span>Left Click + Drag</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Pan:</span>
+                  <span>Right Click + Drag</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Zoom:</span>
                   <span>Mouse Wheel</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Pan:</span>
-                  <span>Right Click & Drag</span>
                 </div>
               </div>
             </div>

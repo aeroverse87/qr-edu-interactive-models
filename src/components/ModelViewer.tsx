@@ -50,65 +50,61 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   };
 
   return (
-    <div className="model-viewer-container space-y-4">
-      {/* 3D Viewer */}
-      <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
-        <Canvas
-          camera={{ position: [0, 0, 5], fov: 50 }}
-          style={{ background: settings.backgroundColor }}
-          onCreated={({ camera, gl }) => {
-            cameraRef.current = camera;
-            gl.shadowMap.enabled = true;
-            gl.shadowMap.type = THREE.PCFSoftShadowMap;
-          }}
-        >
-          {settings.backgroundLight && <Lights settings={settings} />}
-          
-          <ModelWithFallback url={modelPath} modelId={modelId} title={title} settings={settings} />
-          <Environment preset="studio" />
-          
-          <OrbitControls
-            ref={controlsRef}
-            enablePan={true}
-            enableZoom={true}
-            enableRotate={true}
-            minDistance={0.01}
-            maxDistance={50}
-            zoomSpeed={2}
-            panSpeed={1}
-            rotateSpeed={1}
-            mouseButtons={{
-              LEFT: THREE.MOUSE.ROTATE,
-              MIDDLE: THREE.MOUSE.DOLLY,
-              RIGHT: THREE.MOUSE.PAN
-            }}
-            touches={{
-              ONE: THREE.TOUCH.ROTATE,
-              TWO: THREE.TOUCH.DOLLY_PAN
-            }}
-          />
-        </Canvas>
-        
-        {/* Help overlay for blocked content */}
-        <div className="absolute top-4 right-4 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-xs max-w-[200px]">
-          <div className="font-medium text-yellow-800 mb-1">Trouble loading?</div>
-          <div className="text-yellow-700">Try disabling ad blockers or browser extensions</div>
-        </div>
-      </div>
-
-      {/* Model Info - moved outside viewer */}
+    <div className="space-y-4">
+      {/* Model Info - moved outside and above controls */}
       <div className="bg-white bg-opacity-90 backdrop-blur-sm rounded-lg px-3 py-2 text-sm border shadow-sm inline-block">
         <div className="font-medium text-gray-900">{title}</div>
         <div className="text-gray-600 text-xs">Interactive 3D Model</div>
       </div>
 
-      {/* Compact Controls */}
-      <CompactControls 
-        settings={settings}
-        updateSetting={updateSetting}
-        changeViewpoint={changeViewpoint}
-        resetZoom={resetZoom}
-      />
+      <div className="model-viewer-container space-y-4">
+        {/* 3D Viewer */}
+        <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
+          <Canvas
+            camera={{ position: [0, 0, 5], fov: 50 }}
+            style={{ background: settings.backgroundColor }}
+            onCreated={({ camera, gl }) => {
+              cameraRef.current = camera;
+              gl.shadowMap.enabled = true;
+              gl.shadowMap.type = THREE.PCFSoftShadowMap;
+            }}
+          >
+            {settings.backgroundLight && <Lights settings={settings} />}
+            
+            <ModelWithFallback url={modelPath} modelId={modelId} title={title} settings={settings} />
+            <Environment preset="studio" />
+            
+            <OrbitControls
+              ref={controlsRef}
+              enablePan={true}
+              enableZoom={true}
+              enableRotate={true}
+              minDistance={0.01}
+              maxDistance={50}
+              zoomSpeed={2}
+              panSpeed={1}
+              rotateSpeed={1}
+              mouseButtons={{
+                LEFT: THREE.MOUSE.ROTATE,
+                MIDDLE: THREE.MOUSE.DOLLY,
+                RIGHT: THREE.MOUSE.PAN
+              }}
+              touches={{
+                ONE: THREE.TOUCH.ROTATE,
+                TWO: THREE.TOUCH.DOLLY_PAN
+              }}
+            />
+          </Canvas>
+        </div>
+
+        {/* Compact Controls */}
+        <CompactControls 
+          settings={settings}
+          updateSetting={updateSetting}
+          changeViewpoint={changeViewpoint}
+          resetZoom={resetZoom}
+        />
+      </div>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize, Move } from 'lucide-react';
+import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize, Move, X } from 'lucide-react';
 import { ViewerSettings } from './types';
 import { backgroundOptions, lightPresets, viewpoints } from './constants';
 
@@ -73,6 +73,9 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
     resetZoom();
   };
 
+  // High z-index for fullscreen mode popovers
+  const popoverContentClassName = isFullscreen ? "z-[10000]" : "";
+
   return (
     <div className="bg-white rounded-lg p-3 shadow-sm border">
       <div className="flex items-center gap-2 flex-wrap">
@@ -84,7 +87,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               Lighting
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80 space-y-4">
+          <PopoverContent className={`w-80 space-y-4 ${popoverContentClassName}`}>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Switch
@@ -136,7 +139,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               Colors
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-64">
+          <PopoverContent className={`w-64 ${popoverContentClassName}`}>
             <div className="space-y-2">
               <Label>Light Color</Label>
               <ToggleGroup
@@ -167,7 +170,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               Background
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-48">
+          <PopoverContent className={`w-48 ${popoverContentClassName}`}>
             <div className="space-y-2">
               <Label>Background</Label>
               <Select
@@ -200,7 +203,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               View
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-48">
+          <PopoverContent className={`w-48 ${popoverContentClassName}`}>
             <div className="space-y-2">
               <Label>Viewpoint</Label>
               <ToggleGroup
@@ -227,7 +230,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               Controls
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-64">
+          <PopoverContent className={`w-64 ${popoverContentClassName}`}>
             <div className="space-y-3">
               <Label>Camera Controls</Label>
               <div className="space-y-2 text-sm text-gray-600">
@@ -268,17 +271,32 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
           Wireframe
         </Button>
 
-        {/* Fullscreen Toggle */}
+        {/* Fullscreen Toggle - only show when not in fullscreen */}
+        {!isFullscreen && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleFullscreen}
+            className="flex items-center gap-1"
+          >
+            <Maximize className="w-4 h-4" />
+            Fullscreen
+          </Button>
+        )}
+      </div>
+
+      {/* Fullscreen Exit Button - only show when in fullscreen, positioned at top right */}
+      {isFullscreen && (
         <Button
           variant="outline"
           size="sm"
           onClick={toggleFullscreen}
-          className="flex items-center gap-1"
+          className="absolute top-4 right-4 flex items-center gap-1 z-[10001] bg-white shadow-lg"
         >
-          {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-          {isFullscreen ? 'Exit' : 'Fullscreen'}
+          <X className="w-4 h-4" />
+          Exit Fullscreen
         </Button>
-      </div>
+      )}
     </div>
   );
 }

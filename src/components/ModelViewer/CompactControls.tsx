@@ -35,11 +35,13 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
       viewerElement.style.zIndex = '9999';
       viewerElement.style.backgroundColor = 'white';
       viewerElement.style.padding = '1rem';
+      viewerElement.style.boxSizing = 'border-box';
       
-      // Adjust the 3D viewer height in fullscreen
+      // Adjust the 3D viewer height in fullscreen to take most of the screen
       const canvasContainer = viewerElement.querySelector('.w-full.h-96') as HTMLElement;
       if (canvasContainer) {
-        canvasContainer.style.height = 'calc(100vh - 200px)';
+        canvasContainer.style.height = 'calc(100vh - 8rem)'; // Leave space for controls and info
+        canvasContainer.style.maxHeight = 'calc(100vh - 8rem)';
       }
       
       setIsFullscreen(true);
@@ -53,11 +55,14 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
       viewerElement.style.zIndex = '';
       viewerElement.style.backgroundColor = '';
       viewerElement.style.padding = '';
+      viewerElement.style.boxSizing = '';
       
       // Reset the 3D viewer height
       const canvasContainer = viewerElement.querySelector('.w-full') as HTMLElement;
       if (canvasContainer) {
         canvasContainer.style.height = '';
+        canvasContainer.style.maxHeight = '';
+        canvasContainer.classList.add('h-96'); // Restore original height class
       }
       
       setIsFullscreen(false);

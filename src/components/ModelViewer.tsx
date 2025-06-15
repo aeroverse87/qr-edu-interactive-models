@@ -55,58 +55,84 @@ function ErrorDisplay({ error, modelTitle }: { error: string; modelTitle: string
   );
 }
 
-function Model({ url, modelId }: { url: string; modelId: string }) {
-  const [loadError, setLoadError] = useState<string | null>(null);
+function Model({ url, modelId, onError }: { url: string; modelId: string; onError: (error: string) => void }) {
+  const [modelLoaded, setModelLoaded] = useState(false);
   
   console.log(`Attempting to load model from: ${url}`);
   
   useEffect(() => {
-    // Test if the file exists and check for specific error types
-    fetch(url)
-      .then(response => {
+    // Preload and validate the GLB file
+    const loadAndValidateModel = async () => {
+      try {
+        const response = await fetch(url);
         console.log(`Model file response status for ${modelId}:`, response.status);
+        
         if (!response.ok) {
           if (response.status === 404) {
-            setLoadError(`Model file not found (404)`);
+            onError(`Model file not found (404)`);
           } else if (response.status === 403) {
-            setLoadError(`Access denied (403) - check file permissions`);
+            onError(`Access denied (403) - check file permissions`);
           } else {
-            setLoadError(`Server error (${response.status})`);
+            onError(`Server error (${response.status})`);
           }
-        } else {
-          // Check if the response is actually a GLB file
-          const contentType = response.headers.get('content-type');
-          console.log(`Content type for ${modelId}:`, contentType);
-          if (contentType && !contentType.includes('application/octet-stream') && !contentType.includes('model/gltf-binary')) {
-            console.warn(`Unexpected content type for ${modelId}:`, contentType);
-          }
+          return;
         }
-      })
-      .catch(error => {
-        console.error(`Network error loading model ${modelId}:`, error);
-        if (error.message.includes('ERR_BLOCKED_BY_CLIENT')) {
-          setLoadError(`Blocked by ad blocker or browser extension`);
-        } else if (error.message.includes('CORS')) {
-          setLoadError(`CORS error - check file permissions`);
-        } else {
-          setLoadError(`Network error: ${error.message}`);
-        }
-      });
-  }, [url, modelId]);
 
-  if (loadError) {
-    console.log(`Using placeholder due to error: ${loadError} for model: ${modelId}`);
-    return <PlaceholderModel type={modelId} />;
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        console.log(`Content type for ${modelId}:`, contentType);
+        
+        // Try to preload with useGLTF to catch parsing errors early
+        try {
+          await new Promise((resolve, reject) => {
+            const loader = new THREE.GLTFLoader();
+            loader.load(
+              url,
+              (gltf) => {
+                console.log(`Successfully preloaded model: ${modelId}`, gltf);
+                setModelLoaded(true);
+                resolve(gltf);
+              },
+              (progress) => {
+                console.log(`Loading progress for ${modelId}:`, progress);
+              },
+              (error) => {
+                console.error(`GLB parsing error for model: ${modelId}`, error);
+                onError(`GLB file corrupted or invalid`);
+                reject(error);
+              }
+            );
+          });
+        } catch (parseError) {
+          console.error(`Failed to parse GLB for ${modelId}:`, parseError);
+          onError(`GLB file corrupted or invalid`);
+        }
+        
+      } catch (networkError) {
+        console.error(`Network error loading model ${modelId}:`, networkError);
+        if (networkError.message.includes('ERR_BLOCKED_BY_CLIENT')) {
+          onError(`Blocked by ad blocker or browser extension`);
+        } else if (networkError.message.includes('CORS')) {
+          onError(`CORS error - check file permissions`);
+        } else {
+          onError(`Network error: ${networkError.message}`);
+        }
+      }
+    };
+
+    loadAndValidateModel();
+  }, [url, modelId, onError]);
+
+  if (!modelLoaded) {
+    return null; // Let the Suspense fallback handle loading state
   }
   
   try {
     const { scene } = useGLTF(url);
-    console.log(`Successfully loaded model: ${modelId}`, scene);
+    console.log(`Successfully rendered model: ${modelId}`, scene);
     return <primitive object={scene} scale={1} />;
   } catch (error) {
-    console.error(`GLB parsing error for model: ${modelId}`, error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error';
-    console.log(`Using placeholder for model: ${modelId} due to parsing error: ${errorMessage}`);
+    console.error(`Render error for model: ${modelId}`, error);
     return <PlaceholderModel type={modelId} />;
   }
 }
@@ -116,6 +142,7 @@ function ModelWithFallback({ url, modelId, title }: { url: string; modelId: stri
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleError = (error: string) => {
+    console.log(`Error occurred for ${modelId}: ${error}`);
     setErrorMessage(error);
     setTimeout(() => {
       setUsePlaceholder(true);
@@ -133,7 +160,7 @@ function ModelWithFallback({ url, modelId, title }: { url: string; modelId: stri
 
   return (
     <Suspense fallback={<Loader modelTitle={title} />}>
-      <Model url={url} modelId={modelId} />
+      <Model url={url} modelId={modelId} onError={handleError} />
     </Suspense>
   );
 }

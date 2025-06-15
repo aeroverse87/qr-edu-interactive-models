@@ -48,7 +48,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="model-viewer-container space-y-4">
       {/* 3D Viewer */}
       <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
         <Canvas

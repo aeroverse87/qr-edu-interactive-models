@@ -50,7 +50,7 @@ export function ModelViewerControls({ settings, updateSetting, changeViewpoint }
           <Slider
             value={[settings.environmentLight]}
             onValueChange={([value]) => updateSetting('environmentLight', value)}
-            max={2}
+            max={10}
             min={0}
             step={0.1}
             className="flex-1"

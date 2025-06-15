@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn } from 'lucide-react';
+import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize } from 'lucide-react';
 import { ViewerSettings } from './types';
 import { backgroundOptions, lightPresets, viewpoints } from './constants';
 
@@ -19,6 +19,35 @@ interface CompactControlsProps {
 }
 
 export function CompactControls({ settings, updateSetting, changeViewpoint, resetZoom }: CompactControlsProps) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    const viewerElement = document.querySelector('.model-viewer-container') as HTMLElement;
+    if (!viewerElement) return;
+
+    if (!isFullscreen) {
+      // Enter fullscreen
+      viewerElement.style.position = 'fixed';
+      viewerElement.style.top = '0';
+      viewerElement.style.left = '0';
+      viewerElement.style.width = '100vw';
+      viewerElement.style.height = '100vh';
+      viewerElement.style.zIndex = '9999';
+      viewerElement.style.backgroundColor = 'white';
+      setIsFullscreen(true);
+    } else {
+      // Exit fullscreen
+      viewerElement.style.position = '';
+      viewerElement.style.top = '';
+      viewerElement.style.left = '';
+      viewerElement.style.width = '';
+      viewerElement.style.height = '';
+      viewerElement.style.zIndex = '';
+      viewerElement.style.backgroundColor = '';
+      setIsFullscreen(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg p-3 shadow-sm border">
       <div className="flex items-center gap-2 flex-wrap">
@@ -49,7 +78,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
                 <Slider
                   value={[settings.environmentLight]}
                   onValueChange={([value]) => updateSetting('environmentLight', value)}
-                  max={2}
+                  max={10}
                   min={0}
                   step={0.1}
                   className="flex-1"
@@ -185,6 +214,17 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
         >
           <ZoomIn className="w-4 h-4" />
           Reset Zoom
+        </Button>
+
+        {/* Fullscreen Toggle */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleFullscreen}
+          className="flex items-center gap-1"
+        >
+          {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+          {isFullscreen ? 'Exit' : 'Fullscreen'}
         </Button>
       </div>
     </div>

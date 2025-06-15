@@ -1,7 +1,7 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
-import { Suspense, useState, Component, ReactNode } from 'react';
+import React, { Suspense, useState, Component, ReactNode } from 'react';
 import PlaceholderModel from './PlaceholderModel';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';

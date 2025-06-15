@@ -35,6 +35,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
     const viewpoint = viewpoints.find(v => v.id === viewpointId);
     if (viewpoint && cameraRef.current && controlsRef.current) {
       cameraRef.current.position.set(...viewpoint.position);
+      controlsRef.current.target.set(0, 0, 0);
       controlsRef.current.update();
       updateSetting('viewpoint', viewpointId);
     }
@@ -43,6 +44,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   const resetZoom = () => {
     if (cameraRef.current && controlsRef.current) {
       cameraRef.current.position.set(0, 0, 5);
+      controlsRef.current.target.set(0, 0, 0);
       controlsRef.current.update();
     }
   };
@@ -73,6 +75,17 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
             minDistance={0.01}
             maxDistance={50}
             zoomSpeed={2}
+            panSpeed={1}
+            rotateSpeed={1}
+            mouseButtons={{
+              LEFT: THREE.MOUSE.ROTATE,
+              MIDDLE: THREE.MOUSE.DOLLY,
+              RIGHT: THREE.MOUSE.PAN
+            }}
+            touches={{
+              ONE: THREE.TOUCH.ROTATE,
+              TWO: THREE.TOUCH.DOLLY_PAN
+            }}
           />
         </Canvas>
         

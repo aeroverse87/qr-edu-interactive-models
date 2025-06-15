@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize } from 'lucide-react';
+import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize, Move } from 'lucide-react';
 import { ViewerSettings } from './types';
 import { backgroundOptions, lightPresets, viewpoints } from './constants';
 
@@ -34,6 +34,14 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
       viewerElement.style.height = '100vh';
       viewerElement.style.zIndex = '9999';
       viewerElement.style.backgroundColor = 'white';
+      viewerElement.style.padding = '1rem';
+      
+      // Adjust the 3D viewer height in fullscreen
+      const canvasContainer = viewerElement.querySelector('.w-full.h-96') as HTMLElement;
+      if (canvasContainer) {
+        canvasContainer.style.height = 'calc(100vh - 200px)';
+      }
+      
       setIsFullscreen(true);
     } else {
       // Exit fullscreen
@@ -44,8 +52,20 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
       viewerElement.style.height = '';
       viewerElement.style.zIndex = '';
       viewerElement.style.backgroundColor = '';
+      viewerElement.style.padding = '';
+      
+      // Reset the 3D viewer height
+      const canvasContainer = viewerElement.querySelector('.w-full') as HTMLElement;
+      if (canvasContainer) {
+        canvasContainer.style.height = '';
+      }
+      
       setIsFullscreen(false);
     }
+  };
+
+  const resetView = () => {
+    resetZoom();
   };
 
   return (
@@ -194,6 +214,44 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
           </PopoverContent>
         </Popover>
 
+        {/* Camera Controls */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="flex items-center gap-1">
+              <Move className="w-4 h-4" />
+              Controls
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64">
+            <div className="space-y-3">
+              <Label>Camera Controls</Label>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Rotate:</span>
+                  <span>Left Click + Drag</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Pan:</span>
+                  <span>Right Click + Drag</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Zoom:</span>
+                  <span>Mouse Wheel</span>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetView}
+                className="w-full flex items-center gap-1"
+              >
+                <ZoomIn className="w-4 h-4" />
+                Reset Camera
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
         {/* Wireframe Toggle */}
         <Button
           variant={settings.showWireframe ? "default" : "outline"}
@@ -203,17 +261,6 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
         >
           <Grid className="w-4 h-4" />
           Wireframe
-        </Button>
-
-        {/* Reset Zoom */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={resetZoom}
-          className="flex items-center gap-1"
-        >
-          <ZoomIn className="w-4 h-4" />
-          Reset Zoom
         </Button>
 
         {/* Fullscreen Toggle */}

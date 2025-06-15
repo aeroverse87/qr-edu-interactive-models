@@ -4,7 +4,6 @@ import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-t
 import { Suspense, useState, useEffect } from 'react';
 import PlaceholderModel from './PlaceholderModel';
 import { Progress } from '@/components/ui/progress';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 interface ModelViewerProps {
   modelPath: string;
@@ -83,31 +82,7 @@ function Model({ url, modelId, onError }: { url: string; modelId: string; onErro
         const contentType = response.headers.get('content-type');
         console.log(`Content type for ${modelId}:`, contentType);
         
-        // Try to preload with GLTFLoader to catch parsing errors early
-        try {
-          await new Promise((resolve, reject) => {
-            const loader = new GLTFLoader();
-            loader.load(
-              url,
-              (gltf) => {
-                console.log(`Successfully preloaded model: ${modelId}`, gltf);
-                setModelLoaded(true);
-                resolve(gltf);
-              },
-              (progress) => {
-                console.log(`Loading progress for ${modelId}:`, progress);
-              },
-              (error) => {
-                console.error(`GLB parsing error for model: ${modelId}`, error);
-                onError(`GLB file corrupted or invalid`);
-                reject(error);
-              }
-            );
-          });
-        } catch (parseError) {
-          console.error(`Failed to parse GLB for ${modelId}:`, parseError);
-          onError(`GLB file corrupted or invalid`);
-        }
+        setModelLoaded(true);
         
       } catch (networkError) {
         console.error(`Network error loading model ${modelId}:`, networkError);

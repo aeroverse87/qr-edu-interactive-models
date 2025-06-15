@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import QRCode from "qrcode";
+import { Eye, Share2, Smartphone, QrCode, Globe, Users, BookOpen, Zap } from "lucide-react";
 
 interface Model {
   id: string;
@@ -13,6 +14,8 @@ interface Model {
   category: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   qrCodeUrl: string;
+  image: string;
+  gradient: string;
 }
 
 const models: Model[] = [
@@ -22,7 +25,9 @@ const models: Model[] = [
     description: "Explore the internal structure of Earth including crust, mantle, outer core, and inner core with detailed cross-sectional views.",
     category: "Geography",
     difficulty: "Beginner",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "🌍",
+    gradient: "from-blue-500 to-green-500"
   },
   {
     id: "prokaryotes-eukaryotes",
@@ -30,7 +35,9 @@ const models: Model[] = [
     description: "Compare and contrast the cellular structures of prokaryotic and eukaryotic cells with interactive 3D models.",
     category: "Biology",
     difficulty: "Intermediate",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "🦠",
+    gradient: "from-purple-500 to-pink-500"
   },
   {
     id: "root-structure",
@@ -38,7 +45,9 @@ const models: Model[] = [
     description: "Discover the anatomy of plant root systems including primary and secondary growth structures.",
     category: "Botany",
     difficulty: "Intermediate",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "🌱",
+    gradient: "from-green-500 to-emerald-500"
   },
   {
     id: "blood-components",
@@ -46,7 +55,9 @@ const models: Model[] = [
     description: "Learn about red blood cells, white blood cells, platelets, and plasma through detailed 3D visualization.",
     category: "Biology",
     difficulty: "Beginner",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "🩸",
+    gradient: "from-red-500 to-rose-500"
   },
   {
     id: "harappa-stamp",
@@ -54,7 +65,9 @@ const models: Model[] = [
     description: "Examine ancient Indus Valley civilization seals and stamps with intricate designs and undeciphered scripts.",
     category: "Archaeology",
     difficulty: "Advanced",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "🏺",
+    gradient: "from-amber-500 to-orange-500"
   },
   {
     id: "priest-king",
@@ -62,7 +75,9 @@ const models: Model[] = [
     description: "Study the famous Priest-King sculpture from Mohenjo-daro, showcasing Indus Valley artistic excellence.",
     category: "Archaeology",
     difficulty: "Advanced",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "👑",
+    gradient: "from-yellow-500 to-amber-500"
   },
   {
     id: "varaha",
@@ -70,7 +85,9 @@ const models: Model[] = [
     description: "Explore the Hindu deity Varaha avatar sculpture with detailed religious and cultural significance.",
     category: "Culture",
     difficulty: "Intermediate",
-    qrCodeUrl: ""
+    qrCodeUrl: "",
+    image: "🕉️",
+    gradient: "from-indigo-500 to-purple-500"
   }
 ];
 
@@ -85,8 +102,8 @@ const Index = () => {
         models.map(async (model) => {
           const modelUrl = `${baseUrl}/model/${model.id}`;
           const qrCodeDataUrl = await QRCode.toDataURL(modelUrl, {
-            width: 150,
-            margin: 2,
+            width: 120,
+            margin: 1,
             color: {
               dark: '#1e40af',
               light: '#ffffff'
@@ -112,148 +129,262 @@ const Index = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "Biology": return "bg-blue-100 text-blue-800";
-      case "Geography": return "bg-purple-100 text-purple-800";
-      case "Botany": return "bg-green-100 text-green-800";
-      case "Archaeology": return "bg-amber-100 text-amber-800";
-      case "Culture": return "bg-pink-100 text-pink-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "Biology": return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Geography": return "bg-purple-100 text-purple-800 border-purple-200";
+      case "Botany": return "bg-green-100 text-green-800 border-green-200";
+      case "Archaeology": return "bg-amber-100 text-amber-800 border-amber-200";
+      case "Culture": return "bg-pink-100 text-pink-800 border-pink-200";
+      default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+      {/* Hero Section */}
+      <header className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white">
+        <div className="absolute inset-0 bg-black opacity-10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Interactive MM Education
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+              Interactive Multimedia Education
             </h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore educational content through immersive 3D models. Scan QR codes with your mobile device 
-              to access interactive multimedia learning experiences.
+            <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto opacity-90 leading-relaxed">
+              Explore educational 3D models through interactive QR code-based learning experiences
             </p>
+            <Button 
+              size="lg" 
+              className="bg-white text-indigo-600 hover:bg-gray-100 text-lg px-8 py-4 rounded-full font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"
+              onClick={() => document.getElementById('models')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              Explore Models
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Features Section */}
-        <div className="mb-12 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Interactive Learning</h3>
-              <p className="text-gray-600 text-sm">Engage with 3D models for deeper understanding</p>
-            </div>
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+      {/* Features Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Enhanced Learning Through Technology</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Experience the future of education with our interactive 3D models and QR code technology
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <QrCode className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">QR Code Access</h3>
-              <p className="text-gray-600 text-sm">Instant mobile access via QR code scanning</p>
+              <p className="text-gray-600 text-sm">Scan QR codes to instantly access 3D models on any device</p>
             </div>
-            <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
+            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Interactive 3D</h3>
+              <p className="text-gray-600 text-sm">Explore 3D models that bring learning to life</p>
+            </div>
+            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <BookOpen className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Educational Content</h3>
-              <p className="text-gray-600 text-sm">Curated models across multiple disciplines</p>
+              <p className="text-gray-600 text-sm">Access curated educational information and detailed explanations</p>
+            </div>
+            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100">
+              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Multi-disciplinary</h3>
+              <p className="text-gray-600 text-sm">From biology to archaeology, explore diverse subjects</p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Models Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {modelsWithQR.map((model, index) => (
-            <Card key={model.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge className={getCategoryColor(model.category)}>
-                    {model.category}
-                  </Badge>
-                  <Badge variant="outline" className={getDifficultyColor(model.difficulty)}>
-                    {model.difficulty}
-                  </Badge>
-                </div>
-                <CardTitle className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {model.title}
-                </CardTitle>
-                <CardDescription className="text-gray-600 leading-relaxed">
-                  {model.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex flex-col items-center space-y-4">
-                  {/* QR Code */}
-                  <div className="bg-white p-3 rounded-lg border-2 border-gray-100">
-                    {model.qrCodeUrl ? (
-                      <img 
-                        src={model.qrCodeUrl} 
-                        alt={`QR Code for ${model.title}`}
-                        className="w-24 h-24"
-                      />
-                    ) : (
-                      <div className="w-24 h-24 bg-gray-100 animate-pulse rounded"></div>
-                    )}
+      {/* Models Grid */}
+      <div id="models" className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Educational Models</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Explore our collection of interactive 3D models across various subjects. Scan the QR code to view the model directly on your device.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {modelsWithQR.map((model, index) => (
+              <Card key={model.id} className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg bg-white overflow-hidden transform hover:-translate-y-2">
+                {/* Model Header with Gradient and Icon */}
+                <div className={`h-32 bg-gradient-to-r ${model.gradient} relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black opacity-10"></div>
+                  <div className="relative h-full flex items-center justify-center">
+                    <div className="text-6xl">{model.image}</div>
                   </div>
-                  <p className="text-xs text-gray-500 text-center">
-                    Scan to access on mobile
-                  </p>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2 w-full">
-                    <Button 
-                      onClick={() => navigate(`/model/${model.id}`)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      View Model
-                    </Button>
+                  <div className="absolute top-4 left-4">
+                    <Badge className={`${getCategoryColor(model.category)} border font-medium`}>
+                      {model.category}
+                    </Badge>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="outline" className={`${getDifficultyColor(model.difficulty)} border-white text-xs`}>
+                      {model.difficulty}
+                    </Badge>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    {model.title}
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 leading-relaxed text-sm">
+                    {model.description}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between">
+                    {/* QR Code */}
+                    <div className="flex flex-col items-center">
+                      <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
+                        {model.qrCodeUrl ? (
+                          <img 
+                            src={model.qrCodeUrl} 
+                            alt={`QR Code for ${model.title}`}
+                            className="w-16 h-16"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-gray-100 animate-pulse rounded"></div>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 text-center mt-1">Scan QR Code</p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col space-y-2">
+                      <Button 
+                        onClick={() => navigate(`/model/${model.id}`)}
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm px-4 py-2"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        Explore Model
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const url = `${window.location.origin}/model/${model.id}`;
+                          navigator.clipboard.writeText(url);
+                        }}
+                        className="text-xs"
+                      >
+                        <Share2 className="w-3 h-3 mr-1" />
+                        Share Link
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
+      </div>
 
-        {/* Instructions */}
-        <div className="mt-16 bg-blue-50 rounded-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">How to Use</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">1</div>
-              <h3 className="font-semibold text-gray-900 mb-2">Choose a Model</h3>
-              <p className="text-gray-600 text-sm">Select any educational model from the collection above</p>
+      {/* How It Works Section */}
+      <div className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Get started with our interactive 3D models in just three simple steps
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Step 1 */}
+            <div className="text-center relative">
+              <div className="mb-8">
+                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <QrCode className="w-12 h-12 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                  1
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Scan QR Code</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Use your device's camera to scan any model's QR code. Works on smartphones, tablets, and computers with cameras.
+              </p>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">2</div>
-              <h3 className="font-semibold text-gray-900 mb-2">Scan QR Code</h3>
-              <p className="text-gray-600 text-sm">Use your mobile device to scan the QR code for instant access</p>
+
+            {/* Step 2 */}
+            <div className="text-center relative">
+              <div className="mb-8">
+                <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <Globe className="w-12 h-12 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                  2
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Access Model</h3>
+              <p className="text-gray-600 leading-relaxed">
+                The model opens instantly in your browser. No app downloads required. Compatible with all modern devices and browsers.
+              </p>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600 mb-2">3</div>
-              <h3 className="font-semibold text-gray-900 mb-2">Explore & Learn</h3>
-              <p className="text-gray-600 text-sm">Interact with the 3D model and discover educational content</p>
+
+            {/* Step 3 */}
+            <div className="text-center relative">
+              <div className="mb-8">
+                <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <Zap className="w-12 h-12 text-white" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                  3
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Interact & Learn</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Rotate, zoom, and explore the 3D model. Access detailed information, share with others, and enhance your learning experience.
+              </p>
+            </div>
+          </div>
+
+          {/* Additional Features */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100">
+              <div className="flex items-center mb-4">
+                <Smartphone className="w-8 h-8 text-blue-600 mr-3" />
+                <h3 className="text-xl font-semibold text-gray-900">Mobile Optimized</h3>
+              </div>
+              <p className="text-gray-600">
+                All models are optimized for mobile devices with touch controls, pinch-to-zoom, and responsive design for the best learning experience on any screen size.
+              </p>
+            </div>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-100">
+              <div className="flex items-center mb-4">
+                <Share2 className="w-8 h-8 text-green-600 mr-3" />
+                <h3 className="text-xl font-semibold text-gray-900">Easy Sharing</h3>
+              </div>
+              <p className="text-gray-600">
+                Share models instantly with classmates, students, or colleagues. Generate QR codes for any model and distribute learning materials effortlessly.
+              </p>
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <footer className="bg-gradient-to-r from-gray-900 to-blue-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <p className="text-gray-600">© 2024 Interactive MM Education. Enhancing learning through technology.</p>
+            <h3 className="text-2xl font-bold mb-4">Interactive MM Education</h3>
+            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+              Enhancing learning through technology. Experience the future of education with our interactive 3D models and QR code-based learning platform.
+            </p>
+            <p className="text-gray-400">© 2024 Interactive MM Education. All rights reserved.</p>
           </div>
         </div>
       </footer>

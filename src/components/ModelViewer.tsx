@@ -3,20 +3,27 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
 import { Suspense, useState, useEffect } from 'react';
 import PlaceholderModel from './PlaceholderModel';
+import { Progress } from '@/components/ui/progress';
 
 interface ModelViewerProps {
   modelPath: string;
   title: string;
 }
 
-function Loader() {
+function Loader({ modelTitle }: { modelTitle: string }) {
   const { progress } = useProgress();
   return (
     <Html center>
-      <div className="flex flex-col items-center space-y-4">
+      <div className="flex flex-col items-center space-y-4 p-6 bg-white rounded-lg shadow-lg min-w-[250px]">
         <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <div className="text-blue-600 font-medium">
-          Loading 3D Model... {Math.round(progress)}%
+        <div className="text-center">
+          <div className="text-blue-600 font-medium mb-2">
+            Loading {modelTitle}
+          </div>
+          <Progress value={progress} className="w-48 h-2" />
+          <div className="text-sm text-gray-500 mt-2">
+            {Math.round(progress)}% complete
+          </div>
         </div>
       </div>
     </Html>
@@ -60,7 +67,7 @@ function Model({ url, modelId }: { url: string; modelId: string }) {
   }
 }
 
-function ModelWithFallback({ url, modelId }: { url: string; modelId: string }) {
+function ModelWithFallback({ url, modelId, title }: { url: string; modelId: string; title: string }) {
   const [usePlaceholder, setUsePlaceholder] = useState(false);
 
   if (usePlaceholder) {
@@ -69,13 +76,7 @@ function ModelWithFallback({ url, modelId }: { url: string; modelId: string }) {
   }
 
   return (
-    <Suspense 
-      fallback={<Loader />}
-      onError={(error) => {
-        console.error(`Suspense error for model ${modelId}:`, error);
-        setUsePlaceholder(true);
-      }}
-    >
+    <Suspense fallback={<Loader modelTitle={title} />}>
       <Model url={url} modelId={modelId} />
     </Suspense>
   );
@@ -99,7 +100,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={0.8} />
         <pointLight position={[-10, -10, -10]} intensity={0.3} />
         
-        <ModelWithFallback url={modelPath} modelId={modelId} />
+        <ModelWithFallback url={modelPath} modelId={modelId} title={title} />
         <Environment preset="studio" />
         
         <OrbitControls

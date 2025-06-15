@@ -1,7 +1,7 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html, useProgress } from '@react-three/drei';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import PlaceholderModel from './PlaceholderModel';
 
 interface ModelViewerProps {
@@ -24,16 +24,37 @@ function Loader() {
 }
 
 function Model({ url, modelId }: { url: string; modelId: string }) {
-  const [loadError, setLoadError] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   console.log(`Attempting to load model from: ${url}`);
+  
+  useEffect(() => {
+    // Test if the file exists by making a fetch request
+    fetch(url)
+      .then(response => {
+        console.log(`Model file response status for ${modelId}:`, response.status);
+        if (!response.ok) {
+          console.error(`Model file not found: ${url} (Status: ${response.status})`);
+          setLoadError(`File not found: ${response.status}`);
+        }
+      })
+      .catch(error => {
+        console.error(`Network error loading model ${modelId}:`, error);
+        setLoadError(`Network error: ${error.message}`);
+      });
+  }, [url, modelId]);
+
+  if (loadError) {
+    console.log(`Using placeholder due to error: ${loadError} for model: ${modelId}`);
+    return <PlaceholderModel type={modelId} />;
+  }
   
   try {
     const { scene } = useGLTF(url);
     console.log(`Successfully loaded model: ${modelId}`, scene);
     return <primitive object={scene} scale={1} />;
   } catch (error) {
-    console.error(`Failed to load model: ${modelId}`, error);
+    console.error(`GLB parsing error for model: ${modelId}`, error);
     console.log(`Using placeholder for model: ${modelId}`);
     return <PlaceholderModel type={modelId} />;
   }
@@ -48,7 +69,13 @@ function ModelWithFallback({ url, modelId }: { url: string; modelId: string }) {
   }
 
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense 
+      fallback={<Loader />}
+      onError={(error) => {
+        console.error(`Suspense error for model ${modelId}:`, error);
+        setUsePlaceholder(true);
+      }}
+    >
       <Model url={url} modelId={modelId} />
     </Suspense>
   );
@@ -64,6 +91,9 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
         style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}
+        onError={(error) => {
+          console.error(`Canvas error for model ${modelId}:`, error);
+        }}
       >
         <ambientLight intensity={0.6} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={0.8} />

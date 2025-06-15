@@ -56,52 +56,7 @@ function ErrorDisplay({ error, modelTitle }: { error: string; modelTitle: string
 }
 
 function Model({ url, modelId, onError }: { url: string; modelId: string; onError: (error: string) => void }) {
-  const [modelLoaded, setModelLoaded] = useState(false);
-  
   console.log(`Attempting to load model from: ${url}`);
-  
-  useEffect(() => {
-    // Preload and validate the GLB file
-    const loadAndValidateModel = async () => {
-      try {
-        const response = await fetch(url);
-        console.log(`Model file response status for ${modelId}:`, response.status);
-        
-        if (!response.ok) {
-          if (response.status === 404) {
-            onError(`Model file not found (404)`);
-          } else if (response.status === 403) {
-            onError(`Access denied (403) - check file permissions`);
-          } else {
-            onError(`Server error (${response.status})`);
-          }
-          return;
-        }
-
-        // Check content type
-        const contentType = response.headers.get('content-type');
-        console.log(`Content type for ${modelId}:`, contentType);
-        
-        setModelLoaded(true);
-        
-      } catch (networkError) {
-        console.error(`Network error loading model ${modelId}:`, networkError);
-        if (networkError.message.includes('ERR_BLOCKED_BY_CLIENT')) {
-          onError(`Blocked by ad blocker or browser extension`);
-        } else if (networkError.message.includes('CORS')) {
-          onError(`CORS error - check file permissions`);
-        } else {
-          onError(`Network error: ${networkError.message}`);
-        }
-      }
-    };
-
-    loadAndValidateModel();
-  }, [url, modelId, onError]);
-
-  if (!modelLoaded) {
-    return null; // Let the Suspense fallback handle loading state
-  }
   
   try {
     const { scene } = useGLTF(url);
@@ -109,8 +64,46 @@ function Model({ url, modelId, onError }: { url: string; modelId: string; onErro
     return <primitive object={scene} scale={1} />;
   } catch (error) {
     console.error(`Render error for model: ${modelId}`, error);
+    onError(`Failed to parse 3D model file`);
     return <PlaceholderModel type={modelId} />;
   }
+}
+
+function ModelErrorBoundary({ children, onError }: { children: React.ReactNode; onError: (error: string) => void }) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      if (event.message?.includes('GLB') || event.message?.includes('GLTF')) {
+        console.error('GLB Error caught:', event.error);
+        setHasError(true);
+        onError('GLB file parsing failed');
+      }
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      if (event.reason?.message?.includes('GLB') || event.reason?.message?.includes('GLTF')) {
+        console.error('GLB Promise rejection caught:', event.reason);
+        setHasError(true);
+        onError('GLB file loading failed');
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, [onError]);
+
+  if (hasError) {
+    return null;
+  }
+
+  return <>{children}</>;
 }
 
 function ModelWithFallback({ url, modelId, title }: { url: string; modelId: string; title: string }) {
@@ -122,7 +115,7 @@ function ModelWithFallback({ url, modelId, title }: { url: string; modelId: stri
     setErrorMessage(error);
     setTimeout(() => {
       setUsePlaceholder(true);
-    }, 3000); // Show error for 3 seconds before switching to placeholder
+    }, 3000);
   };
 
   if (usePlaceholder) {
@@ -135,9 +128,11 @@ function ModelWithFallback({ url, modelId, title }: { url: string; modelId: stri
   }
 
   return (
-    <Suspense fallback={<Loader modelTitle={title} />}>
-      <Model url={url} modelId={modelId} onError={handleError} />
-    </Suspense>
+    <ModelErrorBoundary onError={handleError}>
+      <Suspense fallback={<Loader modelTitle={title} />}>
+        <Model url={url} modelId={modelId} onError={handleError} />
+      </Suspense>
+    </ModelErrorBoundary>
   );
 }
 

@@ -63,7 +63,7 @@ function Loader({ modelTitle }: { modelTitle: string }) {
 
 function Model({ url }: { url: string }) {
   const { scene } = useGLTF(url);
-  return <primitive object={scene} scale={1} />;
+  return <primitive object={scene} scale={2} />;
 }
 
 function ModelWithFallback({ url, modelId, title }: { url: string; modelId: string; title: string }) {
@@ -91,7 +91,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   return (
     <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden relative">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
+        camera={{ position: [0, 0, 3], fov: 50 }}
         style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}
       >
         <ambientLight intensity={0.6} />
@@ -105,8 +105,8 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
           enablePan={true}
           enableZoom={true}
           enableRotate={true}
-          minDistance={2}
-          maxDistance={10}
+          minDistance={1}
+          maxDistance={8}
         />
       </Canvas>
       

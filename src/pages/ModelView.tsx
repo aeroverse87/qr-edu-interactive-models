@@ -2,8 +2,11 @@
 import { useParams } from "react-router-dom";
 import ModelViewer from "@/components/ModelViewer";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Share, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import QRCodeLib from "qrcode";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const models = [
   {
@@ -60,8 +63,32 @@ const models = [
 const ModelView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   
   const model = models.find(m => m.id === id);
+  
+  // Get related models (same category, excluding current model)
+  const relatedModels = models.filter(m => 
+    m.category === model?.category && m.id !== id
+  ).slice(0, 3);
+  
+  useEffect(() => {
+    const generateQRCode = async () => {
+      if (model) {
+        const modelUrl = `${window.location.origin}/model/${model.id}`;
+        const qrCodeDataUrl = await QRCodeLib.toDataURL(modelUrl, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#3b4cc0',
+            light: '#ffffff'
+          }
+        });
+        setQrCodeUrl(qrCodeDataUrl);
+      }
+    };
+    generateQRCode();
+  }, [model]);
   
   if (!model) {
     return (
@@ -80,69 +107,138 @@ const ModelView = () => {
 
   const modelPath = `/models/${model.id}.glb`;
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: model.title,
+          text: model.description,
+          url: url,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+        // Fallback to copying to clipboard
+        navigator.clipboard.writeText(url);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(url);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/')}
-              className="flex items-center space-x-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Models</span>
-            </Button>
-            <h1 className="text-2xl font-bold text-gray-900">{model.title}</h1>
-            <div></div>
-          </div>
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/')}
+            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to all models</span>
+          </Button>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* 3D Model Viewer */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Left Side - 3D Model Viewer */}
+          <div className="lg:col-span-3">
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">{model.title}</h1>
+            <div className="bg-white">
               <ModelViewer modelPath={modelPath} title={model.title} />
             </div>
-          </div>
 
-          {/* Model Information */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">About This Model</h2>
-              <p className="text-gray-600 leading-relaxed mb-4">{model.description}</p>
+            {/* About This Model - Moved under viewer */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold text-blue-600 mb-4">About this Model</h2>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                {model.description}
+              </p>
               
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500">Category:</span>
-                  <span className="text-sm text-gray-900">{model.category}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500">Difficulty:</span>
-                  <span className="text-sm text-gray-900">{model.difficulty}</span>
+              <div className="flex space-x-4 mb-8">
+                <Button onClick={handleShare} className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
+                  <Share className="w-4 h-4" />
+                  <span>Share Model</span>
+                </Button>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <Download className="w-4 h-4" />
+                  <span>Download Resources</span>
+                </Button>
+              </div>
+
+              {/* Interactive Features */}
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold text-blue-600 mb-4">Interactive Features</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-700">Rotate the model by dragging with your mouse or swiping on touch devices</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-700">Zoom in or out using the scroll wheel or pinch gestures</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-700">Click on labeled parts to view detailed information</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-gray-700">Use the controls panel to toggle visibility of different components</span>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Controls</h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex justify-between">
-                  <span>Rotate:</span>
-                  <span>Left Click + Drag</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Pan:</span>
-                  <span>Right Click + Drag</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Zoom:</span>
-                  <span>Mouse Wheel</span>
-                </div>
+          {/* Right Side - QR Code and Related Models */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* QR Code Section */}
+            <div className="bg-white border rounded-lg p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <QrCode className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-semibold text-blue-600">Model QR Code</h3>
+              </div>
+              <div className="text-center">
+                {qrCodeUrl && (
+                  <img 
+                    src={qrCodeUrl} 
+                    alt={`QR Code for ${model.title}`}
+                    className="mx-auto mb-4 border rounded-lg"
+                  />
+                )}
+                <p className="text-sm text-gray-600">
+                  Scan this QR code to access this 3D model directly on another device
+                </p>
+              </div>
+            </div>
+
+            {/* Related Models */}
+            <div className="bg-white border rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-blue-600 mb-4">Related Models</h3>
+              <div className="space-y-4">
+                {relatedModels.map((relatedModel) => (
+                  <div 
+                    key={relatedModel.id}
+                    onClick={() => navigate(`/model/${relatedModel.id}`)}
+                    className="cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors"
+                  >
+                    <h4 className="font-medium text-blue-600 hover:text-blue-700 mb-1">
+                      {relatedModel.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {relatedModel.description}
+                    </p>
+                  </div>
+                ))}
+                {relatedModels.length === 0 && (
+                  <p className="text-sm text-gray-500">No related models found</p>
+                )}
               </div>
             </div>
           </div>

@@ -43,7 +43,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
 
   const resetZoom = () => {
     if (cameraRef.current && controlsRef.current) {
-      cameraRef.current.position.set(0, 0, 5);
+      cameraRef.current.position.set(0, 0, 3);
       controlsRef.current.target.set(0, 0, 0);
       controlsRef.current.update();
     }
@@ -55,7 +55,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
         {/* 3D Viewer */}
         <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
           <Canvas
-            camera={{ position: [0, 0, 5], fov: 50 }}
+            camera={{ position: [0, 0, 3], fov: 50 }}
             style={{ background: settings.backgroundColor }}
             onCreated={({ camera, gl }) => {
               cameraRef.current = camera;
@@ -73,8 +73,8 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
               enablePan={true}
               enableZoom={true}
               enableRotate={true}
-              minDistance={0.01}
-              maxDistance={50}
+              minDistance={0.5}
+              maxDistance={20}
               zoomSpeed={2}
               panSpeed={1}
               rotateSpeed={1}

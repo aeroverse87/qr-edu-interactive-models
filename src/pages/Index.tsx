@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import QRCode from "qrcode";
 import { Eye, Share2, Smartphone, QrCode, Globe, Users, BookOpen, Zap } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Model {
   id: string;
@@ -94,6 +94,7 @@ const models: Model[] = [
 const Index = () => {
   const [modelsWithQR, setModelsWithQR] = useState<Model[]>(models);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const generateQRCodes = async () => {
@@ -135,6 +136,33 @@ const Index = () => {
       case "Archaeology": return "bg-amber-100 text-amber-800 border-amber-200";
       case "Culture": return "bg-pink-100 text-pink-800 border-pink-200";
       default: return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const handleShareLink = async (modelId: string, modelTitle: string) => {
+    const url = `${window.location.origin}/model/${modelId}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: modelTitle,
+          text: `Check out this 3D model: ${modelTitle}`,
+          url: url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast({
+          title: "Link copied!",
+          description: "The model link has been copied to your clipboard.",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast({
+        title: "Copy failed",
+        description: "Unable to copy link. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -274,10 +302,7 @@ const Index = () => {
                       <Button 
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          const url = `${window.location.origin}/model/${model.id}`;
-                          navigator.clipboard.writeText(url);
-                        }}
+                        onClick={() => handleShareLink(model.id, model.title)}
                         className="text-xs"
                       >
                         <Share2 className="w-3 h-3 mr-1" />

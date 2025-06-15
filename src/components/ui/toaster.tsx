@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 
 export function Toaster() {
   const [isReady, setIsReady] = useState(false)
+  const { toasts } = useToast()
   
   useEffect(() => {
     setIsReady(true)
@@ -20,8 +21,6 @@ export function Toaster() {
   if (!isReady) {
     return null
   }
-  
-  const { toasts } = useToast()
 
   return (
     <ToastProvider>

@@ -23,6 +23,9 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
     lightRotation: 0,
     lightPreset: 'white',
     viewpoint: 'front',
+    showAxes: false,
+    showLightSource: false,
+    lightPosition: [10, 10, 10],
   });
   
   console.log(`ModelViewer - Title: ${title}, ModelPath: ${modelPath}, ModelId: ${modelId}`);

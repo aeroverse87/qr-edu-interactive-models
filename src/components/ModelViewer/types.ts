@@ -13,6 +13,9 @@ export interface ViewerSettings {
   lightRotation: number;
   lightPreset: string;
   viewpoint: string;
+  showAxes: boolean;
+  showLightSource: boolean;
+  lightPosition: [number, number, number];
 }
 
 export interface ErrorBoundaryState {

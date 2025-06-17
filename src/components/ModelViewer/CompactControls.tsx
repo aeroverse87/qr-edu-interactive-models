@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -7,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize, Move, X } from 'lucide-react';
+import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize, Move, X, Axis3d } from 'lucide-react';
 import { ViewerSettings } from './types';
 import { backgroundOptions, lightPresets, viewpoints } from './constants';
 
@@ -98,6 +97,15 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
                 <Label htmlFor="background-light">Background Light</Label>
               </div>
 
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="show-light-source"
+                  checked={settings.showLightSource}
+                  onCheckedChange={(checked) => updateSetting('showLightSource', checked)}
+                />
+                <Label htmlFor="show-light-source">Show Light Source</Label>
+              </div>
+
               <div className="flex items-center space-x-4">
                 <Label className="flex items-center space-x-2 min-w-[120px]">
                   <Eye className="w-4 h-4" />
@@ -126,6 +134,43 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
                   step={15}
                   className="flex-1"
                 />
+              </div>
+
+              {/* Light Position Controls */}
+              <div className="space-y-2">
+                <Label>Light Position</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label className="text-xs">X: {settings.lightPosition[0].toFixed(1)}</Label>
+                    <Slider
+                      value={[settings.lightPosition[0]]}
+                      onValueChange={([value]) => updateSetting('lightPosition', [value, settings.lightPosition[1], settings.lightPosition[2]])}
+                      max={20}
+                      min={-20}
+                      step={0.5}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Y: {settings.lightPosition[1].toFixed(1)}</Label>
+                    <Slider
+                      value={[settings.lightPosition[1]]}
+                      onValueChange={([value]) => updateSetting('lightPosition', [settings.lightPosition[0], value, settings.lightPosition[2]])}
+                      max={20}
+                      min={-20}
+                      step={0.5}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Z: {settings.lightPosition[2].toFixed(1)}</Label>
+                    <Slider
+                      value={[settings.lightPosition[2]]}
+                      onValueChange={([value]) => updateSetting('lightPosition', [settings.lightPosition[0], settings.lightPosition[1], value])}
+                      max={20}
+                      min={-20}
+                      step={0.5}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </PopoverContent>
@@ -259,6 +304,17 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
             </div>
           </PopoverContent>
         </Popover>
+
+        {/* Axes Toggle */}
+        <Button
+          variant={settings.showAxes ? "default" : "outline"}
+          size="sm"
+          onClick={() => updateSetting('showAxes', !settings.showAxes)}
+          className="flex items-center gap-1"
+        >
+          <Axis3d className="w-4 h-4" />
+          Axes
+        </Button>
 
         {/* Wireframe Toggle */}
         <Button

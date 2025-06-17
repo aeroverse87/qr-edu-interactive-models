@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -54,5 +53,11 @@ export function Model({ url, settings }: ModelProps) {
     };
   }, []);
 
-  return <primitive object={scene} scale={4} />;
+  return (
+    <>
+      <primitive object={scene} scale={4} />
+      {/* Axis helpers */}
+      {settings.showAxes && <axesHelper args={[5]} />}
+    </>
+  );
 }

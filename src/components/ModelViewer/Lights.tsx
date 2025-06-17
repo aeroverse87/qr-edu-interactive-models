@@ -1,6 +1,7 @@
 
 import { lightPresets } from './constants';
 import { ViewerSettings } from './types';
+import { LightSource } from './LightSource';
 
 interface LightsProps {
   settings: ViewerSettings;
@@ -10,15 +11,18 @@ export function Lights({ settings }: LightsProps) {
   const lightColor = lightPresets.find(p => p.id === settings.lightPreset)?.color || '#ffffff';
   const rotationRad = (settings.lightRotation * Math.PI) / 180;
 
+  // Use custom light position or calculate from rotation
+  const lightPosition: [number, number, number] = settings.lightPosition || [
+    Math.cos(rotationRad) * 10,
+    10,
+    Math.sin(rotationRad) * 10
+  ];
+
   return (
     <>
       <ambientLight intensity={settings.environmentLight * 0.3} color={lightColor} />
       <directionalLight
-        position={[
-          Math.cos(rotationRad) * 10,
-          10,
-          Math.sin(rotationRad) * 10
-        ]}
+        position={lightPosition}
         intensity={settings.environmentLight * 0.8}
         color={lightColor}
         castShadow
@@ -43,6 +47,12 @@ export function Lights({ settings }: LightsProps) {
         intensity={settings.environmentLight * 0.6}
         color={lightColor}
         castShadow
+      />
+      
+      {/* Light source visualization */}
+      <LightSource 
+        position={lightPosition}
+        visible={settings.showLightSource}
       />
     </>
   );

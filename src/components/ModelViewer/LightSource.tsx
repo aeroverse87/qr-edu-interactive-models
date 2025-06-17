@@ -22,7 +22,7 @@ export function LightSource({ position, visible }: LightSourceProps) {
         <meshBasicMaterial color="#ffff00" transparent opacity={0.1} />
       </Sphere>
       
-      {/* Simple light rays using basic mesh components */}
+      {/* Simple light rays using lines instead of boxes */}
       {[0, 1, 2, 3, 4, 5].map((i) => {
         const angle = (i * Math.PI) / 3;
         const rayLength = 1.0;
@@ -30,14 +30,16 @@ export function LightSource({ position, visible }: LightSourceProps) {
         const z = Math.sin(angle) * rayLength;
         
         return (
-          <mesh 
-            key={i} 
-            position={[x * 0.5, 0, z * 0.5]}
-            rotation={[0, 0, Math.PI / 2]}
-          >
-            <boxGeometry args={[0.02, 0.8, 0.02]} />
-            <meshBasicMaterial color="#ffff00" transparent opacity={0.4} />
-          </mesh>
+          <group key={i}>
+            <mesh position={[x * 0.25, 0, z * 0.25]}>
+              <sphereGeometry args={[0.05]} />
+              <meshBasicMaterial color="#ffff00" transparent opacity={0.6} />
+            </mesh>
+            <mesh position={[x * 0.5, 0, z * 0.5]}>
+              <sphereGeometry args={[0.03]} />
+              <meshBasicMaterial color="#ffff00" transparent opacity={0.4} />
+            </mesh>
+          </group>
         );
       })}
     </group>

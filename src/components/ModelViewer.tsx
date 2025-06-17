@@ -1,4 +1,3 @@
-
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { useState, useRef } from 'react';
@@ -29,8 +28,8 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
 
   // Different zoom settings for different model types
   const isSmallArtifact = modelId === 'priest-king' || modelId === 'harappa-stamp';
-  const minDistance = isSmallArtifact ? 0.5 : 1.5;
-  const defaultCameraPosition = isSmallArtifact ? 3 : 4;
+  const minDistance = isSmallArtifact ? 0.1 : 1.0;
+  const defaultCameraPosition = isSmallArtifact ? 3 : 5;
 
   const updateSetting = <K extends keyof ViewerSettings>(key: K, value: ViewerSettings[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -79,7 +78,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
               enableZoom={true}
               enableRotate={true}
               minDistance={minDistance}
-              maxDistance={20}
+              maxDistance={200}
               zoomSpeed={2}
               panSpeed={1}
               rotateSpeed={1}

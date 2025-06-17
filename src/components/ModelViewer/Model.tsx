@@ -30,5 +30,29 @@ export function Model({ url, settings }: ModelProps) {
     });
   }, [scene, settings.showWireframe]);
 
+  // Add protection against model extraction
+  React.useEffect(() => {
+    const preventSelection = (e: Event) => {
+      e.preventDefault();
+      return false;
+    };
+
+    // Prevent text selection and dragging on the canvas
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+      canvas.addEventListener('selectstart', preventSelection);
+      canvas.addEventListener('dragstart', preventSelection);
+      canvas.style.userSelect = 'none';
+      canvas.style.webkitUserSelect = 'none';
+    }
+
+    return () => {
+      if (canvas) {
+        canvas.removeEventListener('selectstart', preventSelection);
+        canvas.removeEventListener('dragstart', preventSelection);
+      }
+    };
+  }, []);
+
   return <primitive object={scene} scale={4} />;
 }

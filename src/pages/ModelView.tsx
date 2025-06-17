@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom";
 import ModelViewer from "@/components/ModelViewer";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Share, QrCode } from "lucide-react";
+import { ArrowLeft, Share, QrCode } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import QRCodeLib from "qrcode";
@@ -89,6 +89,33 @@ const ModelView = () => {
     };
     generateQRCode();
   }, [model]);
+
+  // Add protection against right-click and key combinations
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Disable F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.key === 'u') ||
+        (e.ctrlKey && e.key === 's')
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
   
   if (!model) {
     return (
@@ -124,24 +151,6 @@ const ModelView = () => {
     } else {
       // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(url);
-    }
-  };
-
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(modelPath);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `${model.id}.glb`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error downloading file:', error);
     }
   };
 
@@ -182,10 +191,6 @@ const ModelView = () => {
                 <Button onClick={handleShare} className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
                   <Share className="w-4 h-4" />
                   <span>Share Model</span>
-                </Button>
-                <Button onClick={handleDownload} variant="outline" className="flex items-center space-x-2">
-                  <Download className="w-4 h-4" />
-                  <span>Download Resources</span>
                 </Button>
               </div>
 

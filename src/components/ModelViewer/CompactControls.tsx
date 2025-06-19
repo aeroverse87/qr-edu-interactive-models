@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, ZoomIn, Maximize, Minimize, Move, X, Axis3d } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, Sun, ZoomIn } from 'lucide-react';
 import { ViewerSettings } from './types';
 import { backgroundOptions, lightPresets, viewpoints } from './constants';
 
@@ -18,341 +17,151 @@ interface CompactControlsProps {
 }
 
 export function CompactControls({ settings, updateSetting, changeViewpoint, resetZoom }: CompactControlsProps) {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const toggleFullscreen = () => {
-    const viewerElement = document.querySelector('.model-viewer-container') as HTMLElement;
-    if (!viewerElement) return;
-
-    if (!isFullscreen) {
-      // Enter fullscreen
-      viewerElement.style.position = 'fixed';
-      viewerElement.style.top = '0';
-      viewerElement.style.left = '0';
-      viewerElement.style.width = '100vw';
-      viewerElement.style.height = '100vh';
-      viewerElement.style.zIndex = '9999';
-      viewerElement.style.backgroundColor = 'white';
-      viewerElement.style.padding = '1rem';
-      viewerElement.style.boxSizing = 'border-box';
-      
-      // Adjust the 3D viewer height in fullscreen to take most of the screen
-      const canvasContainer = viewerElement.querySelector('.w-full.h-96') as HTMLElement;
-      if (canvasContainer) {
-        canvasContainer.style.height = 'calc(100vh - 8rem)'; // Leave space for controls and info
-        canvasContainer.style.maxHeight = 'calc(100vh - 8rem)';
-      }
-      
-      setIsFullscreen(true);
-    } else {
-      // Exit fullscreen
-      viewerElement.style.position = '';
-      viewerElement.style.top = '';
-      viewerElement.style.left = '';
-      viewerElement.style.width = '';
-      viewerElement.style.height = '';
-      viewerElement.style.zIndex = '';
-      viewerElement.style.backgroundColor = '';
-      viewerElement.style.padding = '';
-      viewerElement.style.boxSizing = '';
-      
-      // Reset the 3D viewer height
-      const canvasContainer = viewerElement.querySelector('.w-full') as HTMLElement;
-      if (canvasContainer) {
-        canvasContainer.style.height = '';
-        canvasContainer.style.maxHeight = '';
-        canvasContainer.classList.add('h-96'); // Restore original height class
-      }
-      
-      setIsFullscreen(false);
-    }
-  };
-
-  const resetView = () => {
-    resetZoom();
-  };
-
-  // High z-index for fullscreen mode popovers
-  const popoverContentClassName = isFullscreen ? "z-[10000]" : "";
-
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm border">
-      <div className="flex items-center gap-2 flex-wrap">
-        {/* Lighting Controls */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Lightbulb className="w-4 h-4" />
-              Lighting
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={`w-80 space-y-4 ${popoverContentClassName}`}>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="background-light"
-                  checked={settings.backgroundLight}
-                  onCheckedChange={(checked) => updateSetting('backgroundLight', checked)}
-                />
-                <Label htmlFor="background-light">Background Light</Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="show-light-source"
-                  checked={settings.showLightSource}
-                  onCheckedChange={(checked) => updateSetting('showLightSource', checked)}
-                />
-                <Label htmlFor="show-light-source">Show Light Source</Label>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <Label className="flex items-center space-x-2 min-w-[120px]">
-                  <Eye className="w-4 h-4" />
-                  <span>Intensity: {settings.environmentLight.toFixed(1)}</span>
-                </Label>
-                <Slider
-                  value={[settings.environmentLight]}
-                  onValueChange={([value]) => updateSetting('environmentLight', value)}
-                  max={10}
-                  min={0}
-                  step={0.1}
-                  className="flex-1"
-                />
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <Label className="flex items-center space-x-2 min-w-[120px]">
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Rotation: {settings.lightRotation}°</span>
-                </Label>
-                <Slider
-                  value={[settings.lightRotation]}
-                  onValueChange={([value]) => updateSetting('lightRotation', value)}
-                  max={360}
-                  min={0}
-                  step={15}
-                  className="flex-1"
-                />
-              </div>
-
-              {/* Light Position Controls */}
-              <div className="space-y-2">
-                <Label>Light Position</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <Label className="text-xs">X: {settings.lightPosition[0].toFixed(1)}</Label>
-                    <Slider
-                      value={[settings.lightPosition[0]]}
-                      onValueChange={([value]) => updateSetting('lightPosition', [value, settings.lightPosition[1], settings.lightPosition[2]])}
-                      max={20}
-                      min={-20}
-                      step={0.5}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Y: {settings.lightPosition[1].toFixed(1)}</Label>
-                    <Slider
-                      value={[settings.lightPosition[1]]}
-                      onValueChange={([value]) => updateSetting('lightPosition', [settings.lightPosition[0], value, settings.lightPosition[2]])}
-                      max={20}
-                      min={-20}
-                      step={0.5}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Z: {settings.lightPosition[2].toFixed(1)}</Label>
-                    <Slider
-                      value={[settings.lightPosition[2]]}
-                      onValueChange={([value]) => updateSetting('lightPosition', [settings.lightPosition[0], settings.lightPosition[1], value])}
-                      max={20}
-                      min={-20}
-                      step={0.5}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Light Presets */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Palette className="w-4 h-4" />
-              Colors
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={`w-64 ${popoverContentClassName}`}>
-            <div className="space-y-2">
-              <Label>Light Color</Label>
-              <ToggleGroup
-                type="single"
-                value={settings.lightPreset}
-                onValueChange={(value) => value && updateSetting('lightPreset', value)}
-                className="grid grid-cols-2 gap-1"
-              >
-                {lightPresets.map((preset) => {
-                  const IconComponent = preset.icon;
-                  return (
-                    <ToggleGroupItem key={preset.id} value={preset.id} className="flex items-center space-x-1 text-xs">
-                      <IconComponent className="w-3 h-3" style={{ color: preset.color }} />
-                      <span>{preset.name}</span>
-                    </ToggleGroupItem>
-                  );
-                })}
-              </ToggleGroup>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Background */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Palette className="w-4 h-4" />
-              Background
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={`w-48 ${popoverContentClassName}`}>
-            <div className="space-y-2">
-              <Label>Background</Label>
-              <Select
-                value={backgroundOptions.find(bg => bg.value === settings.backgroundColor)?.id || 'dark-gradient'}
-                onValueChange={(value) => {
-                  const bg = backgroundOptions.find(bg => bg.id === value);
-                  if (bg) updateSetting('backgroundColor', bg.value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {backgroundOptions.map((bg) => (
-                    <SelectItem key={bg.id} value={bg.id}>
-                      {bg.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Viewpoints */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Camera className="w-4 h-4" />
-              View
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={`w-48 ${popoverContentClassName}`}>
-            <div className="space-y-2">
-              <Label>Viewpoint</Label>
-              <ToggleGroup
-                type="single"
-                value={settings.viewpoint}
-                onValueChange={(value) => value && changeViewpoint(value)}
-                className="grid grid-cols-2 gap-1"
-              >
-                {viewpoints.map((viewpoint) => (
-                  <ToggleGroupItem key={viewpoint.id} value={viewpoint.id} className="text-xs">
-                    {viewpoint.name}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Camera Controls */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Move className="w-4 h-4" />
-              Controls
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className={`w-64 ${popoverContentClassName}`}>
-            <div className="space-y-3">
-              <Label>Camera Controls</Label>
-              <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex justify-between">
-                  <span>Rotate:</span>
-                  <span>Left Click + Drag</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Pan:</span>
-                  <span>Right Click + Drag</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Zoom:</span>
-                  <span>Mouse Wheel</span>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetView}
-                className="w-full flex items-center gap-1"
-              >
-                <ZoomIn className="w-4 h-4" />
-                Reset Camera
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Axes Toggle */}
-        <Button
-          variant={settings.showAxes ? "default" : "outline"}
-          size="sm"
-          onClick={() => updateSetting('showAxes', !settings.showAxes)}
-          className="flex items-center gap-1"
-        >
-          <Axis3d className="w-4 h-4" />
-          Axes
-        </Button>
-
-        {/* Wireframe Toggle */}
-        <Button
-          variant={settings.showWireframe ? "default" : "outline"}
-          size="sm"
-          onClick={() => updateSetting('showWireframe', !settings.showWireframe)}
-          className="flex items-center gap-1"
-        >
+    <div className="bg-white rounded-lg p-4 shadow-sm border space-y-4">
+      {/* Main Controls Row */}
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center space-x-2">
+          <Lightbulb className="w-4 h-4" />
+          <Label htmlFor="background-light">Light</Label>
+          <Switch
+            id="background-light"
+            checked={settings.backgroundLight}
+            onCheckedChange={(checked) => updateSetting('backgroundLight', checked)}
+          />
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Sun className="w-4 h-4" />
+          <Label htmlFor="show-light-source">Show Light Source</Label>
+          <Switch
+            id="show-light-source"
+            checked={settings.showLightSource}
+            onCheckedChange={(checked) => updateSetting('showLightSource', checked)}
+          />
+        </div>
+        
+        <div className="flex items-center space-x-2">
           <Grid className="w-4 h-4" />
-          Wireframe
-        </Button>
+          <Label htmlFor="wireframe">Wireframe</Label>
+          <Switch
+            id="wireframe"
+            checked={settings.showWireframe}
+            onCheckedChange={(checked) => updateSetting('showWireframe', checked)}
+          />
+        </div>
 
-        {/* Fullscreen Toggle - only show when not in fullscreen */}
-        {!isFullscreen && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleFullscreen}
-            className="flex items-center gap-1"
-          >
-            <Maximize className="w-4 h-4" />
-            Fullscreen
-          </Button>
-        )}
+        <Button onClick={resetZoom} variant="outline" size="sm" className="flex items-center space-x-1">
+          <ZoomIn className="w-4 h-4" />
+          <span>Reset Zoom</span>
+        </Button>
       </div>
 
-      {/* Fullscreen Exit Button - only show when in fullscreen, positioned at top right */}
-      {isFullscreen && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleFullscreen}
-          className="absolute top-4 right-4 flex items-center gap-1 z-[10001] bg-white shadow-lg"
+      {/* Light Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center space-x-2">
+          <Label className="flex items-center space-x-1 min-w-[80px]">
+            <Eye className="w-4 h-4" />
+            <span>Intensity</span>
+          </Label>
+          <Slider
+            value={[settings.environmentLight]}
+            onValueChange={([value]) => updateSetting('environmentLight', value)}
+            max={3}
+            min={0}
+            step={0.1}
+            className="flex-1"
+          />
+          <span className="text-sm text-gray-600 min-w-[30px]">{settings.environmentLight.toFixed(1)}</span>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Label className="flex items-center space-x-1 min-w-[80px]">
+            <RotateCcw className="w-4 h-4" />
+            <span>Rotation</span>
+          </Label>
+          <Slider
+            value={[settings.lightRotation]}
+            onValueChange={([value]) => updateSetting('lightRotation', value)}
+            max={360}
+            min={0}
+            step={15}
+            className="flex-1"
+          />
+          <span className="text-sm text-gray-600 min-w-[30px]">{settings.lightRotation}°</span>
+        </div>
+      </div>
+
+      {/* Light Color Presets */}
+      <div className="space-y-2">
+        <Label className="flex items-center space-x-2">
+          <Palette className="w-4 h-4" />
+          <span>Light Color</span>
+        </Label>
+        <ToggleGroup
+          type="single"
+          value={settings.lightPreset}
+          onValueChange={(value) => value && updateSetting('lightPreset', value)}
+          className="justify-start flex-wrap"
         >
-          <X className="w-4 h-4" />
-          Exit Fullscreen
-        </Button>
-      )}
+          {lightPresets.map((preset) => {
+            const IconComponent = preset.icon;
+            return (
+              <ToggleGroupItem key={preset.id} value={preset.id} className="flex items-center space-x-1">
+                <IconComponent className="w-4 h-4" style={{ color: preset.color }} />
+                <span className="hidden sm:inline">{preset.name}</span>
+              </ToggleGroupItem>
+            );
+          })}
+        </ToggleGroup>
+      </div>
+
+      {/* Background and Viewpoint */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="flex items-center space-x-2">
+            <Palette className="w-4 h-4" />
+            <span>Background</span>
+          </Label>
+          <Select
+            value={backgroundOptions.find(bg => bg.value === settings.backgroundColor)?.id || 'dark-gradient'}
+            onValueChange={(value) => {
+              const bg = backgroundOptions.find(bg => bg.id === value);
+              if (bg) updateSetting('backgroundColor', bg.value);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {backgroundOptions.map((bg) => (
+                <SelectItem key={bg.id} value={bg.id}>
+                  {bg.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center space-x-2">
+            <Camera className="w-4 h-4" />
+            <span>Viewpoint</span>
+          </Label>
+          <ToggleGroup
+            type="single"
+            value={settings.viewpoint}
+            onValueChange={(value) => value && changeViewpoint(value)}
+            className="justify-start flex-wrap"
+          >
+            {viewpoints.map((viewpoint) => (
+              <ToggleGroupItem key={viewpoint.id} value={viewpoint.id} className="text-xs">
+                {viewpoint.name}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+      </div>
     </div>
   );
 }

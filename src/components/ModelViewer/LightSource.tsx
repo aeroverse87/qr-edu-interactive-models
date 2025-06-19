@@ -15,7 +15,7 @@ export function LightSource({ position, visible }: LightSourceProps) {
       {/* Main light indicator sphere - much larger and brighter */}
       <mesh>
         <sphereGeometry args={[0.5, 16, 8]} />
-        <meshBasicMaterial color="#ffff00" emissive="#ffff00" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#ffff00" emissive="#ffff00" emissiveIntensity={0.3} />
       </mesh>
       
       {/* Outer glow effect - larger and more visible */}
@@ -42,17 +42,17 @@ export function LightSource({ position, visible }: LightSourceProps) {
             {/* Inner ray points */}
             <mesh position={[x * 0.3, 0, z * 0.3]}>
               <sphereGeometry args={[0.1, 8, 4]} />
-              <meshBasicMaterial color="#ffff00" transparent opacity={0.8} emissive="#ffff00" emissiveIntensity={0.2} />
+              <meshStandardMaterial color="#ffff00" transparent opacity={0.8} emissive="#ffff00" emissiveIntensity={0.2} />
             </mesh>
             {/* Outer ray points */}
             <mesh position={[x * 0.6, 0, z * 0.6]}>
               <sphereGeometry args={[0.08, 8, 4]} />
-              <meshBasicMaterial color="#ffff00" transparent opacity={0.6} emissive="#ffff00" emissiveIntensity={0.1} />
+              <meshStandardMaterial color="#ffff00" transparent opacity={0.6} emissive="#ffff00" emissiveIntensity={0.1} />
             </mesh>
             {/* Furthest ray points */}
             <mesh position={[x * 0.9, 0, z * 0.9]}>
               <sphereGeometry args={[0.06, 8, 4]} />
-              <meshBasicMaterial color="#ffff00" transparent opacity={0.4} emissive="#ffff00" emissiveIntensity={0.1} />
+              <meshStandardMaterial color="#ffff00" transparent opacity={0.4} emissive="#ffff00" emissiveIntensity={0.1} />
             </mesh>
           </group>
         );
@@ -62,7 +62,7 @@ export function LightSource({ position, visible }: LightSourceProps) {
       {[-1, 1].map((direction) => (
         <mesh key={direction} position={[0, direction * 1.5, 0]}>
           <sphereGeometry args={[0.1, 8, 4]} />
-          <meshBasicMaterial color="#ffff00" transparent opacity={0.6} emissive="#ffff00" emissiveIntensity={0.2} />
+          <meshStandardMaterial color="#ffff00" transparent opacity={0.6} emissive="#ffff00" emissiveIntensity={0.2} />
         </mesh>
       ))}
     </group>

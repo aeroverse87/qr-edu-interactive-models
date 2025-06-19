@@ -18,111 +18,97 @@ interface CompactControlsProps {
 
 export function CompactControls({ settings, updateSetting, changeViewpoint, resetZoom }: CompactControlsProps) {
   return (
-    <div className="bg-white rounded-lg p-4 shadow-sm border space-y-4">
-      {/* Main Controls Row */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex items-center space-x-2">
-          <Lightbulb className="w-4 h-4" />
-          <Label htmlFor="background-light">Light</Label>
+    <div className="bg-white rounded-lg p-3 shadow-sm border">
+      {/* Single compact row with all controls */}
+      <div className="flex flex-wrap items-center gap-3 text-sm">
+        {/* Toggle Switches */}
+        <div className="flex items-center space-x-1">
+          <Lightbulb className="w-3 h-3" />
           <Switch
-            id="background-light"
             checked={settings.backgroundLight}
             onCheckedChange={(checked) => updateSetting('backgroundLight', checked)}
+            className="scale-75"
           />
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Sun className="w-4 h-4" />
-          <Label htmlFor="show-light-source">Show Light Source</Label>
+        <div className="flex items-center space-x-1">
+          <Sun className="w-3 h-3" />
           <Switch
-            id="show-light-source"
             checked={settings.showLightSource}
             onCheckedChange={(checked) => updateSetting('showLightSource', checked)}
+            className="scale-75"
           />
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Grid className="w-4 h-4" />
-          <Label htmlFor="wireframe">Wireframe</Label>
+        <div className="flex items-center space-x-1">
+          <Grid className="w-3 h-3" />
           <Switch
-            id="wireframe"
             checked={settings.showWireframe}
             onCheckedChange={(checked) => updateSetting('showWireframe', checked)}
+            className="scale-75"
           />
         </div>
 
-        <Button onClick={resetZoom} variant="outline" size="sm" className="flex items-center space-x-1">
-          <ZoomIn className="w-4 h-4" />
-          <span>Reset Zoom</span>
-        </Button>
-      </div>
+        {/* Divider */}
+        <div className="h-4 w-px bg-gray-300"></div>
 
-      {/* Light Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex items-center space-x-2">
-          <Label className="flex items-center space-x-1 min-w-[80px]">
-            <Eye className="w-4 h-4" />
-            <span>Intensity</span>
-          </Label>
+        {/* Light Intensity */}
+        <div className="flex items-center space-x-2 min-w-[120px]">
+          <Eye className="w-3 h-3" />
           <Slider
             value={[settings.environmentLight]}
             onValueChange={([value]) => updateSetting('environmentLight', value)}
             max={3}
             min={0}
             step={0.1}
-            className="flex-1"
+            className="flex-1 h-1"
           />
-          <span className="text-sm text-gray-600 min-w-[30px]">{settings.environmentLight.toFixed(1)}</span>
+          <span className="text-xs text-gray-600 w-6">{settings.environmentLight.toFixed(1)}</span>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Label className="flex items-center space-x-1 min-w-[80px]">
-            <RotateCcw className="w-4 h-4" />
-            <span>Rotation</span>
-          </Label>
+        {/* Light Rotation */}
+        <div className="flex items-center space-x-2 min-w-[120px]">
+          <RotateCcw className="w-3 h-3" />
           <Slider
             value={[settings.lightRotation]}
             onValueChange={([value]) => updateSetting('lightRotation', value)}
             max={360}
             min={0}
             step={15}
-            className="flex-1"
+            className="flex-1 h-1"
           />
-          <span className="text-sm text-gray-600 min-w-[30px]">{settings.lightRotation}°</span>
+          <span className="text-xs text-gray-600 w-8">{settings.lightRotation}°</span>
         </div>
-      </div>
 
-      {/* Light Color Presets */}
-      <div className="space-y-2">
-        <Label className="flex items-center space-x-2">
-          <Palette className="w-4 h-4" />
-          <span>Light Color</span>
-        </Label>
-        <ToggleGroup
-          type="single"
-          value={settings.lightPreset}
-          onValueChange={(value) => value && updateSetting('lightPreset', value)}
-          className="justify-start flex-wrap"
-        >
-          {lightPresets.map((preset) => {
-            const IconComponent = preset.icon;
-            return (
-              <ToggleGroupItem key={preset.id} value={preset.id} className="flex items-center space-x-1">
-                <IconComponent className="w-4 h-4" style={{ color: preset.color }} />
-                <span className="hidden sm:inline">{preset.name}</span>
-              </ToggleGroupItem>
-            );
-          })}
-        </ToggleGroup>
-      </div>
+        {/* Divider */}
+        <div className="h-4 w-px bg-gray-300"></div>
 
-      {/* Background and Viewpoint */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label className="flex items-center space-x-2">
-            <Palette className="w-4 h-4" />
-            <span>Background</span>
-          </Label>
+        {/* Light Color Presets */}
+        <div className="flex items-center space-x-1">
+          <Palette className="w-3 h-3" />
+          <ToggleGroup
+            type="single"
+            value={settings.lightPreset}
+            onValueChange={(value) => value && updateSetting('lightPreset', value)}
+            className="h-6"
+          >
+            {lightPresets.map((preset) => {
+              const IconComponent = preset.icon;
+              return (
+                <ToggleGroupItem key={preset.id} value={preset.id} className="h-6 w-6 p-1">
+                  <IconComponent className="w-3 h-3" style={{ color: preset.color }} />
+                </ToggleGroupItem>
+              );
+            })}
+          </ToggleGroup>
+        </div>
+
+        {/* Divider */}
+        <div className="h-4 w-px bg-gray-300"></div>
+
+        {/* Background */}
+        <div className="flex items-center space-x-1">
+          <Label className="text-xs">BG:</Label>
           <Select
             value={backgroundOptions.find(bg => bg.value === settings.backgroundColor)?.id || 'dark-gradient'}
             onValueChange={(value) => {
@@ -130,12 +116,12 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               if (bg) updateSetting('backgroundColor', bg.value);
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-6 w-20 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {backgroundOptions.map((bg) => (
-                <SelectItem key={bg.id} value={bg.id}>
+                <SelectItem key={bg.id} value={bg.id} className="text-xs">
                   {bg.name}
                 </SelectItem>
               ))}
@@ -143,24 +129,28 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label className="flex items-center space-x-2">
-            <Camera className="w-4 h-4" />
-            <span>Viewpoint</span>
-          </Label>
+        {/* Viewpoint */}
+        <div className="flex items-center space-x-1">
+          <Camera className="w-3 h-3" />
           <ToggleGroup
             type="single"
             value={settings.viewpoint}
             onValueChange={(value) => value && changeViewpoint(value)}
-            className="justify-start flex-wrap"
+            className="h-6"
           >
             {viewpoints.map((viewpoint) => (
-              <ToggleGroupItem key={viewpoint.id} value={viewpoint.id} className="text-xs">
+              <ToggleGroupItem key={viewpoint.id} value={viewpoint.id} className="h-6 px-2 text-xs">
                 {viewpoint.name}
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
         </div>
+
+        {/* Reset Zoom */}
+        <Button onClick={resetZoom} variant="outline" size="sm" className="h-6 px-2 text-xs">
+          <ZoomIn className="w-3 h-3 mr-1" />
+          Reset
+        </Button>
       </div>
     </div>
   );

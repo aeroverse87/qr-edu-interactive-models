@@ -119,77 +119,98 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
           {/* Divider */}
           <div className="h-4 w-px bg-gray-300"></div>
 
-          {/* Light Color Dropdown */}
-          <div className="flex items-center space-x-1">
-            <Palette className="w-3 h-3" />
-            <Select
-              value={settings.lightPreset}
-              onValueChange={(value) => updateSetting('lightPreset', value)}
-            >
-              <SelectTrigger className="h-6 w-20 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {lightPresets.map((preset) => {
-                  const IconComponent = preset.icon;
-                  return (
-                    <SelectItem key={preset.id} value={preset.id} className="text-xs">
-                      <div className="flex items-center space-x-2">
-                        <IconComponent className="w-3 h-3" style={{ color: preset.color }} />
-                        <span>{preset.name}</span>
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Light Color Dropdown with Tooltip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center space-x-1">
+                <Palette className="w-3 h-3" />
+                <Select
+                  value={settings.lightPreset}
+                  onValueChange={(value) => updateSetting('lightPreset', value)}
+                >
+                  <SelectTrigger className="h-6 w-20 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {lightPresets.map((preset) => {
+                      const IconComponent = preset.icon;
+                      return (
+                        <SelectItem key={preset.id} value={preset.id} className="text-xs">
+                          <div className="flex items-center space-x-2">
+                            <IconComponent className="w-3 h-3" style={{ color: preset.color }} />
+                            <span>{preset.name}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Choose light color preset (warm, cool, natural, etc.)</p>
+            </TooltipContent>
+          </Tooltip>
 
           {/* Divider */}
           <div className="h-4 w-px bg-gray-300"></div>
 
-          {/* Background */}
-          <div className="flex items-center space-x-1">
-            <Label className="text-xs">BG:</Label>
-            <Select
-              value={backgroundOptions.find(bg => bg.value === settings.backgroundColor)?.id || 'dark-gradient'}
-              onValueChange={(value) => {
-                const bg = backgroundOptions.find(bg => bg.id === value);
-                if (bg) updateSetting('backgroundColor', bg.value);
-              }}
-            >
-              <SelectTrigger className="h-6 w-20 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {backgroundOptions.map((bg) => (
-                  <SelectItem key={bg.id} value={bg.id} className="text-xs">
-                    {bg.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Background with Tooltip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center space-x-1">
+                <Label className="text-xs">BG:</Label>
+                <Select
+                  value={backgroundOptions.find(bg => bg.value === settings.backgroundColor)?.id || 'dark-gradient'}
+                  onValueChange={(value) => {
+                    const bg = backgroundOptions.find(bg => bg.id === value);
+                    if (bg) updateSetting('backgroundColor', bg.value);
+                  }}
+                >
+                  <SelectTrigger className="h-6 w-20 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {backgroundOptions.map((bg) => (
+                      <SelectItem key={bg.id} value={bg.id} className="text-xs">
+                        {bg.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Change the background color/gradient</p>
+            </TooltipContent>
+          </Tooltip>
 
-          {/* Viewpoint Dropdown */}
-          <div className="flex items-center space-x-1">
-            <Camera className="w-3 h-3" />
-            <Select
-              value={settings.viewpoint}
-              onValueChange={(value) => changeViewpoint(value)}
-            >
-              <SelectTrigger className="h-6 w-16 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {viewpoints.map((viewpoint) => (
-                  <SelectItem key={viewpoint.id} value={viewpoint.id} className="text-xs">
-                    {viewpoint.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Viewpoint Dropdown with Tooltip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center space-x-1">
+                <Camera className="w-3 h-3" />
+                <Select
+                  value={settings.viewpoint}
+                  onValueChange={(value) => changeViewpoint(value)}
+                >
+                  <SelectTrigger className="h-6 w-16 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {viewpoints.map((viewpoint) => (
+                      <SelectItem key={viewpoint.id} value={viewpoint.id} className="text-xs">
+                        {viewpoint.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Change camera viewpoint (front, back, side views)</p>
+            </TooltipContent>
+          </Tooltip>
 
           {/* Reset Zoom with Tooltip */}
           <Tooltip>

@@ -7,12 +7,14 @@ import { ModelViewerProps, ViewerSettings } from './ModelViewer/types';
 import { CompactControls } from './ModelViewer/CompactControls';
 import { Lights } from './ModelViewer/Lights';
 import { ModelWithFallback } from './ModelViewer/ModelWithFallback';
+import { FullscreenButton } from './ModelViewer/FullscreenButton';
 import { backgroundOptions, viewpoints } from './ModelViewer/constants';
 
 const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
   const modelId = modelPath.split('/').pop()?.replace('.glb', '') || '';
   const cameraRef = useRef<THREE.Camera>();
   const controlsRef = useRef<any>();
+  const viewerRef = useRef<HTMLDivElement>(null);
   
   const [settings, setSettings] = useState<ViewerSettings>({
     backgroundLight: true,
@@ -26,6 +28,7 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
     showAxes: false,
     showLightSource: false,
     lightPosition: [10, 10, 10],
+    showGrid: false,
   });
   
   console.log(`ModelViewer - Title: ${title}, ModelPath: ${modelPath}, ModelId: ${modelId}`);
@@ -61,7 +64,10 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
     <div className="space-y-4">
       <div className="model-viewer-container space-y-4">
         {/* 3D Viewer */}
-        <div className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative">
+        <div 
+          ref={viewerRef}
+          className="w-full h-96 bg-gray-900 rounded-lg overflow-hidden relative"
+        >
           <Canvas
             camera={{ position: [0, 0, defaultCameraPosition], fov: 50 }}
             style={{ background: settings.backgroundColor }}
@@ -72,6 +78,11 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
             }}
           >
             {settings.backgroundLight && <Lights settings={settings} />}
+            
+            {/* Grid */}
+            {settings.showGrid && (
+              <gridHelper args={[20, 20, 0x444444, 0x222222]} />
+            )}
             
             <ModelWithFallback url={modelPath} modelId={modelId} title={title} settings={settings} />
             <Environment preset="studio" />
@@ -97,6 +108,9 @@ const ModelViewer = ({ modelPath, title }: ModelViewerProps) => {
               }}
             />
           </Canvas>
+          
+          {/* Fullscreen Button - positioned inside the 3D view */}
+          <FullscreenButton viewerRef={viewerRef} />
         </div>
 
         {/* Compact Controls */}

@@ -5,7 +5,7 @@ import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Lightbulb, Eye, Grid, RotateCcw, Camera, Palette, Sun, ZoomIn } from 'lucide-react';
+import { Lightbulb, Eye, Grid3x3, RotateCcw, Camera, Palette, Sun, ZoomIn, Grid2x2 } from 'lucide-react';
 import { ViewerSettings } from './types';
 import { backgroundOptions, lightPresets, viewpoints } from './constants';
 
@@ -58,7 +58,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center space-x-1">
-                <Grid className="w-3 h-3" />
+                <Grid3x3 className="w-3 h-3" />
                 <Switch
                   checked={settings.showWireframe}
                   onCheckedChange={(checked) => updateSetting('showWireframe', checked)}
@@ -68,6 +68,22 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
             </TooltipTrigger>
             <TooltipContent>
               <p>Toggle wireframe view</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center space-x-1">
+                <Grid2x2 className="w-3 h-3" />
+                <Switch
+                  checked={settings.showGrid}
+                  onCheckedChange={(checked) => updateSetting('showGrid', checked)}
+                  className="scale-75"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Show/hide floor grid</p>
             </TooltipContent>
           </Tooltip>
 
@@ -185,7 +201,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
             </TooltipContent>
           </Tooltip>
 
-          {/* Viewpoint Dropdown with Tooltip */}
+          {/* 3D Viewport Controls */}
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex items-center space-x-1">
@@ -194,7 +210,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
                   value={settings.viewpoint}
                   onValueChange={(value) => changeViewpoint(value)}
                 >
-                  <SelectTrigger className="h-6 w-16 text-xs">
+                  <SelectTrigger className="h-6 w-20 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -208,7 +224,7 @@ export function CompactControls({ settings, updateSetting, changeViewpoint, rese
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Change camera viewpoint (front, back, side views)</p>
+              <p>3D Viewport: Change camera viewpoint (front, back, side views)</p>
             </TooltipContent>
           </Tooltip>
 

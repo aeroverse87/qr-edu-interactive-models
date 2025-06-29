@@ -16,6 +16,7 @@ export interface ViewerSettings {
   showAxes: boolean;
   showLightSource: boolean;
   lightPosition: [number, number, number];
+  showGrid: boolean;
 }
 
 export interface ErrorBoundaryState {
